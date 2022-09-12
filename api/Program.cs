@@ -46,8 +46,8 @@ app.UseCors(policy =>
 {
     policy.AllowAnyHeader();
     policy.AllowAnyMethod();
-    //policy.AllowAnyOrigin();
-    policy.AllowCredentials();
+    policy.AllowAnyOrigin();
+    //policy.AllowCredentials();
 });
 
 app.UseAuthentication();
