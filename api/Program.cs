@@ -24,9 +24,12 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddCookiePolicy(options => options.Secure = CookieSecurePolicy.Always);
 
-builder.Services.AddDataProtection()
-    .SetApplicationName("QR-App")
-    .PersistKeysToAzureBlobStorage(builder.Configuration.GetConnectionString("Storage"), "keys", "dataprotection");
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDataProtection()
+        .SetApplicationName("QR-App")
+        .PersistKeysToAzureBlobStorage(builder.Configuration.GetConnectionString("Storage"), "keys", "dataprotection");
+}
 
 builder.Services.AddCors();
 
