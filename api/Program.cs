@@ -1,3 +1,4 @@
+using api;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 
@@ -21,6 +22,7 @@ builder.Services.AddAuthentication(options =>
         },
     };
 });
+builder.Services.AddCookiePolicy(options => options.Secure = CookieSecurePolicy.Always);
 
 builder.Services.AddDataProtection()
     .SetApplicationName("QR-App")
@@ -46,8 +48,9 @@ app.UseCors(policy =>
 {
     policy.AllowAnyHeader();
     policy.AllowAnyMethod();
-    policy.AllowAnyOrigin();
-    //policy.AllowCredentials();
+    //policy.AllowAnyOrigin();
+    policy.SetIsOriginAllowed(s => true);
+    policy.AllowCredentials();
 });
 
 app.UseAuthentication();
