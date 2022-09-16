@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using api.Repositories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,35 +11,40 @@ namespace api.Features;
 public class TeamEndpoint : ControllerBase
 {
     private readonly ILogger<TeamEndpoint> _logger;
+    private readonly TeamRepository _repository;
 
-    public TeamEndpoint(ILogger<TeamEndpoint> logger)
+    public TeamEndpoint(ILogger<TeamEndpoint> logger, TeamRepository repository)
     {
         _logger = logger;
+        _repository = repository;
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<TeamResult>> RegisterTeam(RegisterTeamEvent registerTeamEvent)
+    public async Task<Team> RegisterTeam(RegisterTeamRequest registerTeamEvent)
     {
         _logger.LogInformation("Team {TeamName} logged in", registerTeamEvent.TeamName);
-        // register team
+
+        var team = await _repository.SaveTeam(new Team(registerTeamEvent.TeamName, registerTeamEvent.ChurchName, registerTeamEvent.Members));
 
         var claimsIdentity = new ClaimsIdentity(new[]
         {
-            new Claim(ClaimTypes.Name, registerTeamEvent.TeamName),
+            new Claim(ClaimTypes.Name, team.TeamName),
         }, "Cookies");
 
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         await Request.HttpContext.SignInAsync("Cookies", claimsPrincipal);
 
-        return new TeamResult(registerTeamEvent.TeamName, registerTeamEvent.TeamMemberCount, registerTeamEvent.GroupCode);
+        return team;
     }
 
     [HttpGet()]
     [Authorize]
-    public IActionResult Get()
+    public async Task<ActionResult<Team>> Get()
     {
-        var userClaims = User.Claims.Select(x => new {x.Type, x.Value}).ToList();
-        return Ok(userClaims);
+        if (User.Identity?.IsAuthenticated != true)
+            return Unauthorized();
+
+        return await _repository.GetTeam(User.Identity.Name!);
     }
 
     [HttpPost("logout")]
@@ -51,11 +57,4 @@ public class TeamEndpoint : ControllerBase
     }
 }
 
-public class RegisterTeamEvent
-{
-    public string GroupCode { get; set; } = "";
-    public string TeamName { get; set; } = "";
-    public int TeamMemberCount { get; set; }
-}
-
-public record TeamResult(string TeamName, int TeamMemberCount, string GroupName);
+public record RegisterTeamRequest(string TeamName, string ChurchName, int Members);

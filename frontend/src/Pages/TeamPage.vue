@@ -2,13 +2,15 @@
 
 import Status from "./Status.vue";
 import Results from "./Results.vue";
+import { store } from "../Composables/UseLogin";
+
 </script>
 
 <template>
   <div class="flex flex-col bg-background h-screen">
     <div class="text-4xl font-bold text-brown bg-light_background py-5 px-4 drop-shadow">
       <h1 class="drop-shadow shadow-accent">Jorden Rundt med</h1>
-      <h1 class="text-accent">The Globetrotters</h1>
+      <h1 class="text-accent">{{store.team?.teamName}}</h1>
     </div>
 
     <div class="px-10 py-5 space-y-4">
@@ -16,7 +18,7 @@ import Results from "./Results.vue";
         Status
       </div>
       
-      <Results/>
+      <Status/>
       
     </div>
 
