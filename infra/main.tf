@@ -16,6 +16,13 @@ terraform {
   }
   experiments = [module_variable_optional_attrs]
 
+  backend "azurerm" {
+    resource_group_name  = "BCC-Platform"
+    storage_account_name = "bccplatformtfstate"
+    container_name       = "tfstate"
+    key                  = "qr-code-run.terraform.tfstate"
+  }
+
 }
 
 provider "azurerm" {
@@ -26,7 +33,7 @@ provider "azapi" {
 }
 
 locals {
-    location        = "EastNorway"
+    location        = "norwayeast"
     resource_group  = "qr-code-run-${var.environment}"
     resource_prefix = "qr-code-run-prod"
     platform_resource_prefix = "qr-code-run-${var.environment}"
