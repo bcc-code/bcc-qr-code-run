@@ -1,6 +1,11 @@
 ﻿<script setup lang="ts">
-import {login} from "../Composables/UseLogin";
+import {login} from "../api/teamApi";
+import {getChurches} from "../api/churchApi";
 import {ref} from "vue";
+
+const churches = ref<string[]>([])
+
+getChurches().then(p => churches.value = p);
 
 const teamName = ref('');
 const churchName = ref('');
@@ -36,9 +41,7 @@ async function join() {
           <label for="church" class="block text-sm font-medium text-white">Menighet</label>
           <select v-model="churchName" id="church" name="church" class="mt-1 block w-full rounded-md border-0 py-2 pl-3 pr-10 text-base focus:outline-none focus:ring-2 focus:ring-accent">
             <option disabled selected>-- Velg menighet --</option>
-            <option>Oslo</option>
-            <option>Bergen</option>
-            <option>Sandefjord</option>
+            <option v-for="church in churches" :key="church">{{ church }}</option>
           </select>
         </div>
 

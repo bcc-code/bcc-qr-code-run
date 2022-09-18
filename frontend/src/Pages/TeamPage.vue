@@ -2,7 +2,7 @@
 
 import Status from "./Status.vue";
 import Results from "./Results.vue";
-import { store } from "../Composables/UseLogin";
+import { store } from "../api/teamApi";
 
 </script>
 

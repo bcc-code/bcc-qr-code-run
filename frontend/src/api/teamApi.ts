@@ -1,8 +1,7 @@
 ﻿import {reactive} from 'vue'
+import baseUrl from "./baseApi";
 
-const baseUrl = "https://localhost:7065"
-
-interface Team {
+export interface Team {
     teamName: string,
     churchName: string,
     members: string,
@@ -61,47 +60,3 @@ export async function logout() {
         store.isLoggedIn = false;
     } catch (e) { }
 }
-
-//
-// const login = async () => {
-//     try {
-//         const result = await fetch('https://localhost:7065/team/register', {
-//             method: 'POST',
-//             headers: {
-//                 'Accept': 'application/json',
-//                 'Content-Type': 'application/json'
-//             },
-//             credentials: "include",
-//             referrerPolicy: "strict-origin-when-cross-origin",
-//             mode: "cors",
-//             body: JSON.stringify({
-//                 "groupCode": "tbg",
-//                 "teamName": "globetrotters",
-//                 "teamMemberCount": 0})
-//         });
-//     }
-//     catch (e){ }
-// }
-//
-// const getLoggedInTeam = async () => {
-//     const result = await fetch('https://localhost:7065/team/', {
-//         credentials: "include",
-//     });
-//     return await result.json()
-// }
-//
-//
-// const logout = async () => {
-//     try {
-//         const result = await fetch('https://localhost:7065/team/logout', {
-//             method: 'POST',
-//             headers: {
-//                 'Accept': 'application/json',
-//                 'Content-Type': 'application/json'
-//             },
-//             credentials: "include",
-//         });
-//         reply.value = await result.json();
-//     }
-//     catch (e){ }
-// }

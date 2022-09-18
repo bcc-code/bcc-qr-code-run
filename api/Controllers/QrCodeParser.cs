@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace api.Features;
+namespace api.Controllers;
 
 public static class QrCodeParser
 {
