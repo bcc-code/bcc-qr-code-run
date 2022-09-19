@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import LandingPage from "./Pages/LandingPage.vue";
 import TeamPage from "./Pages/TeamPage.vue";
-import {store, getLoggedInTeam} from "./Composables/UseLogin";
+import {store, getLoggedInTeam} from "./api/teamApi";
 
 getLoggedInTeam()
 

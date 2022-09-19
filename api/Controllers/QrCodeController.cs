@@ -1,27 +1,32 @@
-﻿using api.Repositories;
+﻿using api.Data;
+using api.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
-namespace api.Features;
+namespace api.Controllers;
 
 [ApiController]
+[Authorize]
 public class QrCodeController : ControllerBase
 {
     private readonly ILogger<QrCodeController> _logger;
-    private readonly TeamRepository _teamRepository;
-    private readonly QrCodeRepository _qrCodeRepository;
+    private readonly DataContext _context;
+    private readonly IMemoryCache _cache;
 
-    public QrCodeController(ILogger<QrCodeController> logger, TeamRepository teamRepository, QrCodeRepository qrCodeRepository)
+    public QrCodeController(ILogger<QrCodeController> logger, DataContext dataContext, IMemoryCache cache)
     {
         _logger = logger;
-        _teamRepository = teamRepository;
-        _qrCodeRepository = qrCodeRepository;
+        _context = dataContext;
+        _cache = cache;
     }
 
     /// <summary>
     /// Scan a QR Code 
     /// </summary>
     /// <response code="200">Points added</response>
-    /// <response code="400">Bad request - QR Code is malformed or team is not found</response>
+    /// <response code="400">Bad request - QR Code is malformed</response>
     /// <response code="401">Not authenticated</response>
     /// <response code="403">Already Scanned a QR Code from this post</response>
 
@@ -37,16 +42,21 @@ public class QrCodeController : ControllerBase
         if (qrCodeData == null)
             return BadRequest();
         
-        var qrCode = await _qrCodeRepository.GetQrCode(qrCodeData);
+        var qrCode = await _cache.GetOrCreateAsync(qrCodeData.QrCodeId, async entry =>
+        {
+            entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+            return await _context.QrCodes.FirstOrDefaultAsync(x => x.QrCodeId == qrCodeData.QrCodeId);
+        });
         if (qrCode == null)
             return BadRequest();
 
-        var team = await _teamRepository.GetTeam(User.Identity.Name!);
+        var team = await _context.Teams.FirstOrDefaultAsync(x => x.TeamName == User.Identity.Name!);
 
-        if (!team.AddQrCode(qrCode))
+        if (team == null)
+            return Unauthorized();
+
+        if (!await team.AddQrCodeAsync(qrCode))
             return Forbid();
-
-        await _teamRepository.SaveTeam(team);
 
         return new QrCodeResult()
         {
@@ -55,8 +65,6 @@ public class QrCodeController : ControllerBase
         };
     }
 }
-
-
 
 public class QrCodeResult
 {

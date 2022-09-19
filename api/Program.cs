@@ -1,16 +1,17 @@
-using api;
-using api.Repositories;
+using api.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddTransient<TeamRepository>();
-builder.Services.AddTransient<QrCodeRepository>();
 
+builder.Services.AddDbContext<DataContext>(options => 
+    options.UseNpgsql("localhost"));
 
+builder.Services.AddMemoryCache();
 
 builder.Services.AddAuthentication(options =>
 {

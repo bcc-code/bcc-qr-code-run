@@ -1,22 +1,24 @@
 ﻿using System.Security.Claims;
+using api.Data;
 using api.Repositories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-namespace api.Features;
+namespace api.Controllers;
 
 [ApiController]
 [Route("team")]
 public class TeamEndpoint : ControllerBase
 {
     private readonly ILogger<TeamEndpoint> _logger;
-    private readonly TeamRepository _repository;
+    private readonly DataContext _context;
 
-    public TeamEndpoint(ILogger<TeamEndpoint> logger, TeamRepository repository)
+    public TeamEndpoint(ILogger<TeamEndpoint> logger, DataContext context)
     {
         _logger = logger;
-        _repository = repository;
+        _context = context;
     }
 
     [HttpPost("register")]
@@ -24,11 +26,20 @@ public class TeamEndpoint : ControllerBase
     {
         _logger.LogInformation("Team {TeamName} logged in", registerTeamEvent.TeamName);
 
-        var team = await _repository.SaveTeam(new Team(registerTeamEvent.TeamName, registerTeamEvent.ChurchName, registerTeamEvent.Members));
+        var team1 = new Team(_context)
+        {
+            Members = registerTeamEvent.Members,
+            TeamName = registerTeamEvent.TeamName,
+            ChurchName = registerTeamEvent.ChurchName,
+        };
+
+        _context.Teams.Add(team1);
+        await _context.SaveChangesAsync();
+        var team = team1;
 
         var claimsIdentity = new ClaimsIdentity(new[]
         {
-            new Claim(ClaimTypes.Name, team.TeamName),
+            new Claim(ClaimTypes.Name, team.Id.ToString()),
         }, "Cookies");
 
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
@@ -44,7 +55,11 @@ public class TeamEndpoint : ControllerBase
         if (User.Identity?.IsAuthenticated != true)
             return Unauthorized();
 
-        return await _repository.GetTeam(User.Identity.Name!);
+        var team = await _context.Teams.FirstOrDefaultAsync(x => x.TeamName == User.Identity.Name!);
+        if (team == null)
+            return Unauthorized();
+        
+        return team;
     }
 
     [HttpPost("logout")]
