@@ -35,8 +35,10 @@ provider "azapi" {
 provider "postgresql" {
   superuser = false
   host      = data.azurerm_postgresql_flexible_server.postgresql_server.fqdn
+  database  =  local.resource_prefix
   username  = "psqladmin"
   password  = data.azurerm_key_vault_secret.postgresql_admin_password.value
+  sslmode   = "require"
 }
 
 data "azurerm_client_config" "current" {}
