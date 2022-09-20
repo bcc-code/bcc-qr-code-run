@@ -1,4 +1,6 @@
-﻿using api.Data;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using api.Data;
 using api.Controllers;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,10 +21,16 @@ public class Team
     public string ChurchName { get; init; }
     public int Members { get; init; }
 
-    public List<Score> Posts { get; set; } = new();
-    public List<Score> SecretsFound { get; set; } = new();
+    [JsonIgnore]
+    public List<Score> QrCodesScanned { get; set; } = new();
+    [NotMapped]
+    public IEnumerable<Score> Posts => QrCodesScanned.Where(x=>x.IsSecret == false);
+    
+    [NotMapped]
+    public IEnumerable<Score> SecretsFound => QrCodesScanned.Where(x => x.IsSecret);
+    
 
-    public int Score => Posts.Sum(x => x.Points) + SecretsFound.Sum(x => x.Points);
+    public int Score => QrCodesScanned.Sum(x => x.Points);
 
     public DateTime? FirstScannedQrCode { get; set; }
     public DateTime? LastScannedQrCode { get; set; }
@@ -31,21 +39,16 @@ public class Team
 
     public async Task<bool> AddQrCodeAsync(QrCode qrCode)
     {
-        if (qrCode.IsSecret)
-        {
-            if (SecretsFound.Any(x => x.Id == qrCode.Id))
-                return false;
-            SecretsFound.Add(new (qrCode.Id, qrCode.Points));
-        }
-        else
-        {
-            if (Posts.Any(x => x.Id == qrCode.Id))
-                return false;
-            Posts.Add(new (qrCode.Id, qrCode.Points));
-        }
+        if (QrCodesScanned.Any(x => x.Id == qrCode.GroupId))
+            return false;
         
-        FirstScannedQrCode ??= DateTime.Now;
-        LastScannedQrCode = DateTime.Now;
+        _dataContext.Add(new Score(qrCode.GroupId, qrCode.Points, qrCode.IsSecret)
+        {
+            TeamId = Id,
+        });
+        
+        FirstScannedQrCode ??= DateTime.UtcNow;
+        LastScannedQrCode = DateTime.UtcNow;
 
         await _dataContext.SaveChangesAsync();
 
@@ -53,4 +56,9 @@ public class Team
     }
 }
 
-public record Score(int Id, int Points);
+public record Score(int Id, int Points, bool IsSecret)
+{
+    public int TeamId { get; set; }
+    [JsonIgnore]
+    public Team Team { get; set; }
+};

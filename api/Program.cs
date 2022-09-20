@@ -9,7 +9,7 @@ builder.Services.AddControllers();
 
 
 builder.Services.AddDbContext<DataContext>(options => 
-    options.UseNpgsql("localhost"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("postgres")));
 
 builder.Services.AddMemoryCache();
 
@@ -67,5 +67,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+    dataContext.Database.Migrate();
+}
 
 app.Run();

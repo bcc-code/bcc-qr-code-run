@@ -9,7 +9,7 @@ public class DataContext : DbContext
 
     public DataContext(DbContextOptions options) : base(options)
     {
-        
+        //this.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTrackingWithIdentityResolution;
     }
     
     public DbSet<Team> Teams { get; set; }

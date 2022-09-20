@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace api.Migrations
 {
-    public partial class ChurchList : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -25,8 +25,7 @@ namespace api.Migrations
                 name: "QrCodes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<int>(type: "integer", nullable: false),
                     QrCodeId = table.Column<int>(type: "integer", nullable: false),
                     FunFact_Title = table.Column<string>(type: "text", nullable: false),
                     FunFact_Content = table.Column<string>(type: "text", nullable: false),
@@ -62,8 +61,8 @@ namespace api.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Points = table.Column<int>(type: "integer", nullable: false),
-                    TeamId = table.Column<int>(type: "integer", nullable: true),
-                    TeamId1 = table.Column<int>(type: "integer", nullable: true)
+                    IsSecret = table.Column<bool>(type: "boolean", nullable: false),
+                    TeamId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -73,22 +72,12 @@ namespace api.Migrations
                         column: x => x.TeamId,
                         principalTable: "Teams",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Score_Teams_TeamId1",
-                        column: x => x.TeamId1,
-                        principalTable: "Teams",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Score_TeamId",
                 table: "Score",
                 column: "TeamId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Score_TeamId1",
-                table: "Score",
-                column: "TeamId1");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

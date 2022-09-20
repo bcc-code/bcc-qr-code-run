@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using api.Data;
@@ -11,9 +12,10 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20220920193425_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,36 +34,9 @@ namespace api.Migrations
                     b.ToTable("Churches");
                 });
 
-            modelBuilder.Entity("api.Repositories.FunFact", b =>
-                {
-                    b.Property<int>("FunFactId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("FunFactId"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("FunFactId");
-
-                    b.ToTable("FunFact");
-                });
-
             modelBuilder.Entity("api.Repositories.QrCode", b =>
                 {
-                    b.Property<int>("QrCodeId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("FunFactId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("GroupId")
+                    b.Property<int>("Id")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsSecret")
@@ -70,9 +45,10 @@ namespace api.Migrations
                     b.Property<int>("Points")
                         .HasColumnType("integer");
 
-                    b.HasKey("QrCodeId");
+                    b.Property<int>("QrCodeId")
+                        .HasColumnType("integer");
 
-                    b.HasIndex("FunFactId");
+                    b.HasKey("Id");
 
                     b.ToTable("QrCodes");
                 });
@@ -91,7 +67,7 @@ namespace api.Migrations
                     b.Property<int>("Points")
                         .HasColumnType("integer");
 
-                    b.Property<int>("TeamId")
+                    b.Property<int?>("TeamId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -133,24 +109,36 @@ namespace api.Migrations
 
             modelBuilder.Entity("api.Repositories.QrCode", b =>
                 {
-                    b.HasOne("api.Repositories.FunFact", "FunFact")
-                        .WithMany()
-                        .HasForeignKey("FunFactId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.OwnsOne("api.Repositories.FunFact", "FunFact", b1 =>
+                        {
+                            b1.Property<int>("QrCodeId")
+                                .HasColumnType("integer");
 
-                    b.Navigation("FunFact");
+                            b1.Property<string>("Content")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("QrCodeId");
+
+                            b1.ToTable("QrCodes");
+
+                            b1.WithOwner()
+                                .HasForeignKey("QrCodeId");
+                        });
+
+                    b.Navigation("FunFact")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("api.Repositories.Score", b =>
                 {
-                    b.HasOne("api.Repositories.Team", "Team")
+                    b.HasOne("api.Repositories.Team", null)
                         .WithMany("QrCodesScanned")
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Team");
+                        .HasForeignKey("TeamId");
                 });
 
             modelBuilder.Entity("api.Repositories.Team", b =>
