@@ -1,27 +1,24 @@
-﻿using api.Features;
+﻿using api.Data;
+using api.Controllers;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Repositories;
 
-public class TeamRepository
+public class Team
 {
-    public TeamRepository()
-    {
-        
-    }
+    private readonly DataContext _dataContext;
 
-    public async Task<Team> GetTeam(string teamName)
+    public Team(DataContext dataContext)
     {
-        return new Team(teamName, "", 1);
+        _dataContext = dataContext;
     }
+    
+    public int Id { get; set; }
+    
+    public string TeamName { get; init; }
+    public string ChurchName { get; init; }
+    public int Members { get; init; }
 
-    public async Task<Team> SaveTeam(Team team)
-    {
-        return team;
-    }
-}
-
-public record Team(string TeamName, string ChurchName, int Members)
-{
     public List<Score> Posts { get; set; } = new();
     public List<Score> SecretsFound { get; set; } = new();
 
@@ -31,7 +28,8 @@ public record Team(string TeamName, string ChurchName, int Members)
     public DateTime? LastScannedQrCode { get; set; }
     public TimeSpan? TimeSpent => LastScannedQrCode - FirstScannedQrCode;
 
-    public bool AddQrCode(QrCode qrCode)
+
+    public async Task<bool> AddQrCodeAsync(QrCode qrCode)
     {
         if (qrCode.IsSecret)
         {
@@ -48,6 +46,8 @@ public record Team(string TeamName, string ChurchName, int Members)
         
         FirstScannedQrCode ??= DateTime.Now;
         LastScannedQrCode = DateTime.Now;
+
+        await _dataContext.SaveChangesAsync();
 
         return true;
     }
