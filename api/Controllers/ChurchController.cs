@@ -20,6 +20,7 @@ public class ChurchController : ControllerBase
     [HttpGet("churches")]
     public async Task<string[]> GetChurches()
     {
+        
         return await _cache.GetOrCreateAsync("churches", async entry =>
         {
             entry.SetAbsoluteExpiration(TimeSpan.FromHours(1));

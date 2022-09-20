@@ -5,6 +5,17 @@
 Run `docker-compose up --build`  
 Visit http://localhost:5125/
 
+
+## Running With Visual Studio
+
+Debug using the "docker-compose" profile.
+
+## Working with Data in Directus
+
+1. Visit http://localhost:5127/
+2. Log in with admin@admin.com / password
+3. Navigate to Settings -> Data Model and make the relevant collections visible
+
 ### Accessing Database
 
 1. Visit: http://localhost:5126/
@@ -21,7 +32,7 @@ Visit http://localhost:5125/
 
 ## Adding Database Migrations
 
-In backend/Buk.UniversalGames.Api:
+In api/:
 
 `dotnet tool install --global dotnet-ef`  
 `dotnet ef migrations add [Migration Name]`

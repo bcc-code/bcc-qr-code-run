@@ -8,8 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 
-builder.Services.AddDbContext<DataContext>(options => 
-    options.UseNpgsql("localhost"));
+builder.Services.AddDbContext<DataContext>();
 
 builder.Services.AddMemoryCache();
 
@@ -55,6 +54,9 @@ else
 {
     app.UseHttpsRedirection();
 }
+
+var db = app.Services.CreateScope().ServiceProvider.GetService<DataContext>()!.Database;
+await db.MigrateAsync();
 
 app.UseCors(policy =>
 {
