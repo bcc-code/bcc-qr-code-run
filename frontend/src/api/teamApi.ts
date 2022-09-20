@@ -5,6 +5,10 @@ export interface Team {
     teamName: string,
     churchName: string,
     members: string,
+    score: number,
+    posts: [],
+    timeSpent: string,
+    secretsFound: []
 }
 
 export const store = reactive({

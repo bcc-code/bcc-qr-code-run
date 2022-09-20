@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace api.Migrations
 {
-    public partial class ChurchList : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -22,20 +22,17 @@ namespace api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "QrCodes",
+                name: "FunFact",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
+                    FunFactId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    QrCodeId = table.Column<int>(type: "integer", nullable: false),
-                    FunFact_Title = table.Column<string>(type: "text", nullable: false),
-                    FunFact_Content = table.Column<string>(type: "text", nullable: false),
-                    Points = table.Column<int>(type: "integer", nullable: false),
-                    IsSecret = table.Column<bool>(type: "boolean", nullable: false)
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_QrCodes", x => x.Id);
+                    table.PrimaryKey("PK_FunFact", x => x.FunFactId);
                 });
 
             migrationBuilder.CreateTable(
@@ -56,14 +53,35 @@ namespace api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "QrCodes",
+                columns: table => new
+                {
+                    QrCodeId = table.Column<int>(type: "integer", nullable: false),
+                    GroupId = table.Column<int>(type: "integer", nullable: false),
+                    FunFactId = table.Column<int>(type: "integer", nullable: false),
+                    Points = table.Column<int>(type: "integer", nullable: false),
+                    IsSecret = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_QrCodes", x => x.QrCodeId);
+                    table.ForeignKey(
+                        name: "FK_QrCodes_FunFact_FunFactId",
+                        column: x => x.FunFactId,
+                        principalTable: "FunFact",
+                        principalColumn: "FunFactId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Score",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Points = table.Column<int>(type: "integer", nullable: false),
-                    TeamId = table.Column<int>(type: "integer", nullable: true),
-                    TeamId1 = table.Column<int>(type: "integer", nullable: true)
+                    IsSecret = table.Column<bool>(type: "boolean", nullable: false),
+                    TeamId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -72,23 +90,19 @@ namespace api.Migrations
                         name: "FK_Score_Teams_TeamId",
                         column: x => x.TeamId,
                         principalTable: "Teams",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Score_Teams_TeamId1",
-                        column: x => x.TeamId1,
-                        principalTable: "Teams",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_QrCodes_FunFactId",
+                table: "QrCodes",
+                column: "FunFactId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Score_TeamId",
                 table: "Score",
                 column: "TeamId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Score_TeamId1",
-                table: "Score",
-                column: "TeamId1");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -101,6 +115,9 @@ namespace api.Migrations
 
             migrationBuilder.DropTable(
                 name: "Score");
+
+            migrationBuilder.DropTable(
+                name: "FunFact");
 
             migrationBuilder.DropTable(
                 name: "Teams");

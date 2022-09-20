@@ -50,7 +50,9 @@ public class QrCodeController : ControllerBase
         if (qrCode == null)
             return BadRequest();
 
-        var team = await _context.Teams.FirstOrDefaultAsync(x => x.TeamName == User.Identity.Name!);
+        _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
+
+        var team = await _context.Teams.FirstOrDefaultAsync(x => x.Id == int.Parse(User.Identity.Name!));
 
         if (team == null)
             return Unauthorized();

@@ -22,20 +22,31 @@ public class TeamEndpoint : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<Team> RegisterTeam(RegisterTeamRequest registerTeamEvent)
+    public async Task<ActionResult<Team>> RegisterTeam(RegisterTeamRequest registerTeamEvent)
     {
         _logger.LogInformation("Team {TeamName} logged in", registerTeamEvent.TeamName);
-
-        var team1 = new Team(_context)
+        
+        if (registerTeamEvent.Members <= 0)
         {
-            Members = registerTeamEvent.Members,
-            TeamName = registerTeamEvent.TeamName,
-            ChurchName = registerTeamEvent.ChurchName,
-        };
+            return ValidationProblem("Members");
+        }
 
-        _context.Teams.Add(team1);
-        await _context.SaveChangesAsync();
-        var team = team1;
+        var team = await _context.Teams.FirstOrDefaultAsync(x =>
+            x.TeamName == registerTeamEvent.TeamName && x.ChurchName == registerTeamEvent.ChurchName);
+        
+        if (team == null)
+        {
+            var team1 = new Team(_context)
+            {
+                Members = registerTeamEvent.Members,
+                TeamName = registerTeamEvent.TeamName,
+                ChurchName = registerTeamEvent.ChurchName,
+            };
+
+            _context.Teams.Add(team1);
+            await _context.SaveChangesAsync();
+            team = team1;
+        }
 
         var claimsIdentity = new ClaimsIdentity(new[]
         {
@@ -55,7 +66,7 @@ public class TeamEndpoint : ControllerBase
         if (User.Identity?.IsAuthenticated != true)
             return Unauthorized();
 
-        var team = await _context.Teams.FirstOrDefaultAsync(x => x.TeamName == User.Identity.Name!);
+        var team = await _context.Teams.FirstOrDefaultAsync(x => x.Id == int.Parse(User.Identity.Name!));
         if (team == null)
             return Unauthorized();
         
