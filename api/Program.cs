@@ -2,6 +2,7 @@ using api.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,12 @@ builder.Services.AddControllers();
 
 
 builder.Services.AddDbContext<DataContext>();
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetValue<string>("REDIS_CONNECTION_STRING");
+    options.InstanceName = builder.Configuration.GetValue<string>("ENVIRONMENT_NAME");
+});
 
 builder.Services.AddMemoryCache();
 
@@ -31,12 +38,15 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddCookiePolicy(options => options.Secure = CookieSecurePolicy.Always);
 
-if (!builder.Environment.IsDevelopment())
-{
-    builder.Services.AddDataProtection()
-        .SetApplicationName("QR-App")
-        .PersistKeysToAzureBlobStorage(builder.Configuration.GetConnectionString("Storage"), "keys", "dataprotection");
-}
+var redis = ConnectionMultiplexer.Connect(builder.Configuration.GetValue<string>("REDIS_CONNECTION_STRING"));
+builder.Services.AddDataProtection().PersistKeysToStackExchangeRedis(redis, "bcc-code-run-dataprotection-keys");
+
+//if (!builder.Environment.IsDevelopment())
+//{
+//    builder.Services.AddDataProtection()
+//        .SetApplicationName("QR-App")
+//        .PersistKeysToAzureBlobStorage(builder.Configuration.GetConnectionString("Storage"), "keys", "dataprotection");
+//}
 
 builder.Services.AddCors();
 
