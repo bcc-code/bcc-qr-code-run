@@ -9,7 +9,7 @@ services:
       context: .
       dockerfile: api/Dockerfile
     ports:
-      - 5125:5125
+      - 5125:80
     environment:
       - POSTGRES_PORT=5432
       - POSTGRES_DB=bcc-code-run
@@ -38,10 +38,9 @@ services:
 
   
   database:
-    container_name: coderun_database
     image: postgis/postgis:13-master
     volumes:
-      - ./.postgresql/data:/var/lib/postgresql/data
+      - bcc-code-run-psql:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
@@ -52,7 +51,6 @@ services:
       - bcc-code-run
 
   pgadmin: #connect using host.docker.internal as host on windows
-      container_name: coderun_pgadmin4
       image: dpage/pgadmin4
       restart: always
       environment:
@@ -65,7 +63,6 @@ services:
         - bcc-code-run
 
   directus:
-    container_name: coderun_directus
     image: directus/directus:latest
     ports:
       - 5127:8055
@@ -106,3 +103,6 @@ services:
 
 networks:
   bcc-code-run:
+
+volumes:
+  bcc-code-run-psql:
