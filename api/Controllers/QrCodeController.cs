@@ -1,5 +1,6 @@
 ﻿using api.Data;
 using api.Repositories;
+using api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,9 +14,9 @@ public class QrCodeController : ControllerBase
 {
     private readonly ILogger<QrCodeController> _logger;
     private readonly DataContext _context;
-    private readonly IMemoryCache _cache;
+    private readonly CacheService _cache;
 
-    public QrCodeController(ILogger<QrCodeController> logger, DataContext dataContext, IMemoryCache cache)
+    public QrCodeController(ILogger<QrCodeController> logger, DataContext dataContext, CacheService cache)
     {
         _logger = logger;
         _context = dataContext;
@@ -42,10 +43,9 @@ public class QrCodeController : ControllerBase
         if (qrCodeData == null)
             return BadRequest();
         
-        var qrCode = await _cache.GetOrCreateAsync(qrCodeData.QrCodeId, async entry =>
+        var qrCode = await _cache.GetOrCreateAsync(qrCodeData.QrCodeId.ToString(), TimeSpan.FromMinutes(10), () =>
         {
-            entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
-            return await _context.QrCodes.FirstOrDefaultAsync(x => x.QrCodeId == qrCodeData.QrCodeId);
+            return _context.QrCodes.FirstOrDefaultAsync(x => x.QrCodeId == qrCodeData.QrCodeId);
         });
         if (qrCode == null)
             return BadRequest();
