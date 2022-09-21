@@ -226,7 +226,7 @@ resource "azurerm_private_endpoint" "redis_endpoint" {
   private_dns_zone_group {
     name = "default"
     private_dns_zone_ids = [
-      data.azurerm_private_dns_zone.dns_zone.id
+      azurerm_private_dns_zone.redis_dns_zone.id
     ]
   }
 }
