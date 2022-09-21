@@ -186,6 +186,51 @@ resource "azurerm_key_vault_secret" "postgreql_user_password" {
   key_vault_id = data.azurerm_key_vault.keyvault.id
 }
 
+# Redis Cache
+resource "azurerm_redis_cache" "redis_cache" {
+  name                = "${local.resource_prefix}-redis"
+  location            = local.location
+  resource_group_name = local.resource_group
+  capacity            = 0
+  family              = "C"
+  sku_name            = "Basic"
+  enable_non_ssl_port = false
+  minimum_tls_version = "1.2"
+  public_network_access_enabled = false
+
+  redis_configuration {
+  }
+}
+
+# Private DNS zone
+
+data "azurerm_private_dns_zone" "dns_zone" {
+  name                = "privatelink.redis.cache.windows.net"
+  resource_group_name = local.resource_group
+}
+
+# Redis private endpoint
+resource "azurerm_private_endpoint" "redis_endpoint" {
+  name                = "${local.resource_prefix}-redis-endpoint"
+  location            = local.location
+  resource_group_name = local.resource_group
+  subnet_id           = module.container_apps_vlan.subnet_id
+
+  private_service_connection {
+    name                              = "${local.resource_prefix}-redis-endpoint-connection"
+    private_connection_resource_id    =  azurerm_redis_cache.redis_cache.id
+    is_manual_connection              = false
+    subresource_names                 = ["redisCache"]
+  }
+
+  private_dns_zone_group {
+    name = "default"
+    private_dns_zone_ids = [
+      data.azurerm_private_dns_zone.dns_zone.id
+    ]
+  }
+}
+
 # Analytics Workspace
 module "log_analytics_workspace" {
   source                           = "./modules/azure/log_analytics"
@@ -207,6 +252,7 @@ module "application_insights" {
   workspace_id                     = module.log_analytics_workspace.id
 }
 
+
 # VLAN for Container Environment
 module "container_apps_vlan" {
   source                           = "./modules/azure/container_apps_vlan"
@@ -218,4 +264,257 @@ module "container_apps_vlan" {
   depends_on = [
     azurerm_resource_group.rg
   ]
+}
+
+# Create Azure Application for Github Deployment
+
+
+# Container Environment
+module "container_apps_env"  {
+  source                           = "./modules/container_apps_env"
+  managed_environment_name         = "${local.resource_prefix}-env"
+  location                         = local.location
+  resource_group_id                = azurerm_resource_group.rg.id
+  tags                             = local.tags
+  instrumentation_key              = module.application_insights.instrumentation_key
+  workspace_id                     = module.log_analytics_workspace.workspace_id
+  primary_shared_key               = module.log_analytics_workspace.primary_shared_key
+  vlan_subnet_id                   = module.container_apps_vlan.subnet_id
+}
+
+
+
+# API Container App
+module "api_container_app" {
+  source                           = "./modules/container_apps"
+  managed_environment_id           = module.container_apps_env.id
+  location                         = local.location
+  resource_group_id                = azurerm_resource_group.rg.id
+  tags                             = local.tags
+  container_app                   = {
+    name              = "${local.resource_prefix}-api"
+    configuration      = {
+      ingress          = {
+        external       = true
+        targetPort     = 5125
+      }
+      dapr             = {
+        enabled        = true
+        appId          = "${local.resource_prefix}-api"
+        appProtocol    = "http"
+        appPort        = 5125
+      }
+      secrets          = [
+          {
+            name    = "postgresql-password"
+            value   =  module.postgresql_db.db_user_password
+          },
+          {
+            name    = "redis-connection-string"
+            value   =  azurerm_redis_cache.redis_cache.primary_connection_string
+          },
+          {
+            name    = "application-insights-connection-string"
+            value   =  module.application_insights.connection_string
+          },
+          {
+            name    = "new-relic-licence-key"
+            value   =  var.new-relic-licence-key
+          }
+        ]
+    }
+    template          = {
+      containers      = [{
+        image         = "hello-world:latest" // "bccplatform.azurecr.io/bcc-code-run-prod-api:latest"
+        name          = "bcc-code-run-api"
+        env           = [{
+            name        = "APP_PORT"
+            value       = 80
+          },
+          {
+            name        = "POSTGRES_HOST"
+            value       = data.azurerm_postgresql_flexible_server.postgresql_server.fqdn
+          },
+          {
+            name        = "APPLICATIONINSIGHTS_CONNECTION_STRING"
+            secretRef   = "application-insights-connection-string"
+          },
+          {
+            name        = "APPLICATIONINSIGHTS__CONNECTIONSTRING"
+            secretRef   = "application-insights-connection-string"
+          },
+          {
+            name        = "POSTGRES_PORT"
+            value       = 5432
+          },
+          {
+            name        = "POSTGRES_DB"
+            value       = module.postgresql_db.db_name
+          },
+          {
+            name        = "POSTGRES_USER"
+            value       = module.postgresql_db.db_user_username
+          },
+          {
+            name        = "POSTGRES_PASSWORD"
+            secretRef   = "postgresql-password"
+          },
+          {
+            name        = "REDIS_CONNECTION_STRING"
+            secretRef   = "redis-connection-string"
+          },
+          {
+            name        = "ENVIRONMENT_NAME"
+            value   = terraform.workspace
+          } #,
+          # {
+          #   name        = "NEW_RELIC_LICENSE_KEY"
+          #   secretRef   = "new-relic-licence-key"
+          # },
+          # {
+          #   name        = "NEW_RELIC_APP_NAME"
+          #   value       = "buk-universal-games-dev-az"
+          # },
+        ]
+        resources     = {
+          cpu         = 0.5
+          memory      = "1Gi"
+        }
+      }]
+      scale           = {
+        minReplicas   = 0
+        maxReplicas   = 10
+      }
+    }
+  }
+}
+
+# Generate password for directus
+resource "random_password" "directus_admin_pw" {
+  length           = 32
+  special          = true
+  override_special = "!#*()-_=+[]:?"
+}
+
+resource "random_uuid" "directus_key" {
+}
+resource "random_uuid" "directus_secret" {
+}
+
+# Directus Container App
+module "directus_container_app" {
+  source                           = "./modules/container_apps"
+  managed_environment_id           = module.container_apps_env.id
+  location                         = local.location
+  resource_group_id                = azurerm_resource_group.rg.id
+  tags                             = local.tags
+  container_app                   = {
+    name              = "${local.resource_prefix}-directus"
+    configuration      = {
+      ingress          = {
+        external       = true
+        targetPort     = 8055
+      }
+      dapr             = {
+        enabled        = true
+        appId          = "${local.resource_prefix}-directus"
+        appProtocol    = "http"
+        appPort        = 8055
+      }
+      secrets          = [
+        {
+          name    = "postgresql-password"
+          value   =  module.postgresql_db.db_user_password
+        },
+        {
+          name    = "redis-connection-string"
+          value   =  "rediss://:${azurerm_redis_cache.redis_cache.primary_access_key}@${azurerm_redis_cache.redis_cache.hostname}:${azurerm_redis_cache.redis_cache.ssl_port}/0"
+        },
+        {
+          name    = "directus-admin-user-pw"
+          value   =  random_password.directus_admin_pw.result
+        },
+        {
+          name    = "directus-storage-secret"
+          value   =  random_uuid.directus_secret.result
+        }
+      ]
+    }
+    template          = {
+      containers      = [{
+        image         = "directus/directus:latest"
+        name          = "universal-games-directus"
+        env           = [{
+          name        = "APP_PORT"
+          value       = 8055
+        },
+        {
+          name        = "KEY"
+          value   = random_uuid.directus_key.result
+        },
+        {
+          name        = "SECRET"
+          secretRef   = "directus-storage-secret"
+        },
+        {
+          name        = "ADMIN_EMAIL"
+          value       = "it@bcc.no"
+        },
+        {
+          name        = "ADMIN_PASSWORD"
+          secretRef   = "directus-admin-user-pw"
+        },
+        {
+          name        = "DB_CLIENT"
+          value       = "pg"
+        },
+        {
+          name        = "DB_HOST"
+          value       = data.azurerm_postgresql_flexible_server.postgresql_server.fqdn
+        },
+        {
+          name        = "DB_PORT"
+          value       = 5432
+        },
+        {
+          name        = "DB_SSL"
+          value       = true
+        },
+        {
+          name        = "DB_DATABASE"
+          value       = module.postgresql_db.db_name
+        },
+        {
+          name        = "DB_USER"
+          value       = module.postgresql_db.db_user_username
+        },
+        {
+          name        = "DB_PASSWORD"
+          secretRef   = "postgresql-password"
+        },
+        {
+          name        = "CACHE_ENABLED"
+          value       = true
+        },
+        {
+          name        = "CACHE_STORE"
+          value       = "redis"
+        },
+        {
+          name        = "CACHE_REDIS"
+          secretRef   = "redis-connection-string"
+        }
+        
+        ]
+        resources     = {
+          cpu         = 0.5
+          memory      = "1Gi"
+        }
+      }]
+      scale           = {
+        minReplicas   = 0
+        maxReplicas   = 1
+      }
+    }
+  }
 }
