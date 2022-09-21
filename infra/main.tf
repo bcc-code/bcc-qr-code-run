@@ -269,10 +269,10 @@ module "container_apps_vlan" {
 
 # Create Static App for Frontend
 
-resource "azurerm_static_site" "example" {
+resource "azurerm_static_site" "ui" {
   name                = "${local.resource_prefix}-ui"
   resource_group_name = azurerm_resource_group.rg.name
-  location            = local.location
+  location            = "westeurope"
 }
 
 
