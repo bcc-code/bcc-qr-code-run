@@ -207,7 +207,6 @@ resource "azurerm_redis_cache" "redis_cache" {
 resource "azurerm_private_dns_zone" "redis_dns_zone" {
   name                = "privatelink.redis.cache.windows.net"
   resource_group_name = local.resource_group
-  location            = local.location
 }
 
 # Redis private endpoint
