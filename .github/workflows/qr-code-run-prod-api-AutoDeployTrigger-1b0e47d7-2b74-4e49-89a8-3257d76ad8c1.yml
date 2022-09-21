@@ -37,7 +37,7 @@ jobs:
           push: true
           tags: bccplatform.azurecr.io/qr-code-run-prod-api:${{ github.sha }}
           file: api/Dockerfile
-          context: api/
+          context: .
 
 
   deploy:
