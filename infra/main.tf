@@ -271,7 +271,7 @@ module "container_apps_vlan" {
 
 # Container Environment
 module "container_apps_env"  {
-  source                           = "./modules/container_apps_env"
+  source                           = "./modules/azure/container_apps_env"
   managed_environment_name         = "${local.resource_prefix}-env"
   location                         = local.location
   resource_group_id                = azurerm_resource_group.rg.id
@@ -286,7 +286,7 @@ module "container_apps_env"  {
 
 # API Container App
 module "api_container_app" {
-  source                           = "./modules/container_apps"
+  source                           = "./modules/azure/container_apps"
   managed_environment_id           = module.container_apps_env.id
   location                         = local.location
   resource_group_id                = azurerm_resource_group.rg.id
@@ -403,7 +403,7 @@ resource "random_uuid" "directus_secret" {
 
 # Directus Container App
 module "directus_container_app" {
-  source                           = "./modules/container_apps"
+  source                           = "./modules/azure/container_apps"
   managed_environment_id           = module.container_apps_env.id
   location                         = local.location
   resource_group_id                = azurerm_resource_group.rg.id
