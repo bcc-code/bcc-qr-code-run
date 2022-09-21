@@ -49,6 +49,7 @@ locals {
     resource_prefix = "qr-code-run-prod"
     platform_resource_prefix = "qr-code-run-${var.environment}"
     platform_resource_group  = "qr-code-run-${var.environment}"
+    storage_account_name     = "${replace(local.platform_resource_prefix,"-","")}"
     tags            = {}
 }
 
@@ -273,6 +274,7 @@ resource "azurerm_static_site" "ui" {
   name                = "${local.resource_prefix}-ui"
   resource_group_name = azurerm_resource_group.rg.name
   location            = "westeurope"
+  sku_tier            = "Standard"
 }
 
 
@@ -400,6 +402,25 @@ module "api_container_app" {
   }
 }
 
+
+# File Storage for CMS (directus)
+
+resource "azurerm_storage_account" "file_storage" {
+  name                     = local.storage_account_name
+  resource_group_name      = azurerm_resource_group.rg.id.name
+  location                 = local.location
+  account_tier             = "Standard"
+  account_replication_type = "GRS"
+  tags                     = local.tags
+}
+
+resource "azurerm_storage_container" "file_storage_container" {
+  name                  = "files"
+  storage_account_name  = azurerm_storage_account.file_storage.name
+  container_access_type = "blob"
+}
+
+
 # Generate password for directus
 resource "random_password" "directus_admin_pw" {
   length           = 32
@@ -448,6 +469,10 @@ module "directus_container_app" {
         {
           name    = "directus-storage-secret"
           value   =  random_uuid.directus_secret.result
+        },
+        {
+          name    = "azure-storage-key"
+          value   =  azurerm_storage_account.file_storage.primary_access_key
         }
       ]
     }
@@ -461,7 +486,31 @@ module "directus_container_app" {
         },
         {
           name        = "KEY"
-          value   = random_uuid.directus_key.result
+          value       = random_uuid.directus_key.result
+        },
+        {
+          name        = "STORAGE_LOCATIONS"
+          value       = "az"
+        },
+        {
+          name        = "STORAGE_AZ_DRIVER"
+          value       = "azure"
+        },
+        {
+          name        = "STORAGE_AZ_CONTAINER_NAME"
+          value       = azurerm_storage_container.file_storage_container.name
+        },
+        {
+          name        = "STORAGE_AZ_ACCOUNT_NAME"
+          value       = local.storage_account_name
+        },
+        {
+          name        = "STORAGE_AZ_ACCOUNT_KEY"
+          secretRef   = "azure-storage-key"
+        },
+        {
+          name        = "STORAGE_AZ_ENDPOINT"
+          value       = azurerm_storage_account.file_storage.primary_web_endpoint
         },
         {
           name        = "SECRET"
