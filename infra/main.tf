@@ -316,11 +316,11 @@ module "api_container_app" {
           {
             name    = "application-insights-connection-string"
             value   =  module.application_insights.connection_string
-          },
-          {
-            name    = "new-relic-licence-key"
-            value   =  var.new-relic-licence-key
-          }
+          }#,
+          # {
+          #   name    = "new-relic-licence-key"
+          #   value   =  var.new-relic-licence-key
+          # }
         ]
     }
     template          = {
