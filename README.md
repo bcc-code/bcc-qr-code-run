@@ -3,8 +3,14 @@
 ## Running Locally
 
 Run `docker-compose up --build`  
-Visit http://localhost:5125/
+Visit http://localhost:5125/swagger
 
+## Running frontend
+Run `yarn && yarn run dev` in frontend folder   
+Run `dotnet run` in Reverse Proxy folder   
+Visit https://localhost:7298/
+
+This is required to get HTTPS to work, which is required for cookies
 
 ## Running With Visual Studio
 
@@ -34,7 +40,7 @@ Debug using the "docker-compose" profile.
 
 In api/:
 
-`dotnet tool install --global dotnet-ef`  
+`dotnet tool restore`  
 `dotnet ef migrations add [Migration Name]`
 
 Migrations are automatically applied when the a new version of the application is deployed.
