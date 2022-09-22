@@ -53,8 +53,13 @@ public class TeamEndpoint : ControllerBase
             new Claim(ClaimTypes.Name, team.Id.ToString()),
         }, "Cookies");
 
+        var authProperties = new AuthenticationProperties
+        {
+            IsPersistent = true,
+        };
+
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-        await Request.HttpContext.SignInAsync("Cookies", claimsPrincipal);
+        await Request.HttpContext.SignInAsync("Cookies", claimsPrincipal, authProperties);
 
         return team;
     }

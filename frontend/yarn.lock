@@ -384,6 +384,11 @@ browserslist@^4.21.3:
     node-releases "^2.0.6"
     update-browserslist-db "^1.0.5"
 
+callforth@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/callforth/-/callforth-0.3.1.tgz#d40f610c7dd47d0011fd84bac32b3fe11cff1785"
+  integrity sha512-Q2zPfqnwoKsb1DTVCr4lmhe49wKNBsMmNlbudjleu3/co+Nw1pOqFHYJHrW3VZ253ou9AAr+xauQR0C55NPdzA==
+
 camelcase-css@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/camelcase-css/-/camelcase-css-2.0.1.tgz#ee978f6947914cc30c6b44741b6ed1df7f043fd5"
@@ -413,6 +418,11 @@ color-name@^1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.4.tgz#c2a09a87acbde69543de6f63fa3995c826c536a2"
   integrity sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==
+
+core-js@^3.6.5:
+  version "3.25.2"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.25.2.tgz#2d3670c1455432b53fa780300a6fc1bd8304932c"
+  integrity sha512-YB4IAT1bjEfxTJ1XYy11hJAKskO+qmhuDBM8/guIfMz4JvdsAQAqvyb97zXX7JgSrfPLG5mRGFWJwJD39ruq2A==
 
 cssesc@^3.0.0:
   version "3.0.0"
@@ -908,12 +918,24 @@ rollup@~2.78.0:
   optionalDependencies:
     fsevents "~2.3.2"
 
+rtcpeerconnection-shim@^1.2.15:
+  version "1.2.15"
+  resolved "https://registry.yarnpkg.com/rtcpeerconnection-shim/-/rtcpeerconnection-shim-1.2.15.tgz#e7cc189a81b435324c4949aa3dfb51888684b243"
+  integrity sha512-C6DxhXt7bssQ1nHb154lqeL0SXz5Dx4RczXZu2Aa/L1NJFnEVDxFwCBo3fqtuljhHIGceg5JKBV4XJ0gW5JKyw==
+  dependencies:
+    sdp "^2.6.0"
+
 run-parallel@^1.1.9:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/run-parallel/-/run-parallel-1.2.0.tgz#66d1368da7bdf921eb9d95bd1a9229e7f21a43ee"
   integrity sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==
   dependencies:
     queue-microtask "^1.2.2"
+
+sdp@^2.12.0, sdp@^2.6.0:
+  version "2.12.0"
+  resolved "https://registry.yarnpkg.com/sdp/-/sdp-2.12.0.tgz#338a106af7560c86e4523f858349680350d53b22"
+  integrity sha512-jhXqQAQVM+8Xj5EjJGVweuEzgtGWb3tmEEpl3CLP3cStInSbVHSg0QWOGQzNq8pSID4JkpeV2mPqlMDLrm0/Vw==
 
 semver@^7.3.7:
   version "7.3.7"
@@ -1036,7 +1058,17 @@ vue-tsc@^0.40.4:
     "@volar/vue-language-core" "0.40.13"
     "@volar/vue-typescript" "0.40.13"
 
-vue@^3.2.37:
+vue3-qrcode-reader@0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/vue3-qrcode-reader/-/vue3-qrcode-reader-0.0.1.tgz#01ab4fe5513e6411cecba382cdeb998116b96471"
+  integrity sha512-rTZRO2WiBrGRT6pYGMkySNMnEwD9sVlzl9kwPxQ4C0n7I4SXVu60eq8ZQHQTMJAbDTTkbuuW/5reSf+TYFJ5pQ==
+  dependencies:
+    callforth "^0.3.1"
+    core-js "^3.6.5"
+    vue "^3.0.0"
+    webrtc-adapter "7.7.0"
+
+vue@^3.0.0, vue@^3.2.37:
   version "3.2.39"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.2.39.tgz#de071c56c4c32c41cbd54e55f11404295c0dd62d"
   integrity sha512-tRkguhRTw9NmIPXhzk21YFBqXHT2t+6C6wPOgQ50fcFVWnPdetmRqbmySRHznrYjX2E47u0cGlKGcxKZJ38R/g==
@@ -1051,6 +1083,14 @@ webidl-conversions@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-3.0.1.tgz#24534275e2a7bc6be7bc86611cc16ae0a5654871"
   integrity sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==
+
+webrtc-adapter@7.7.0:
+  version "7.7.0"
+  resolved "https://registry.yarnpkg.com/webrtc-adapter/-/webrtc-adapter-7.7.0.tgz#e56ff25f925177ac553a7c49323ca4108d2b5f4d"
+  integrity sha512-7Bp9OBnx642oJRkom1tNAbeJjUadAq2rh5xLL9YXPw5hVyt2h4hHr5bcoPYDs1stp/mZHSPSQA34YISdnr0DBQ==
+  dependencies:
+    rtcpeerconnection-shim "^1.2.15"
+    sdp "^2.12.0"
 
 whatwg-url@^5.0.0:
   version "5.0.0"

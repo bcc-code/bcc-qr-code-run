@@ -57,10 +57,11 @@ public class QrCodeController : ControllerBase
             return Unauthorized();
 
         if (!await team.AddQrCodeAsync(qrCode))
-            return Forbid();
+            return BadRequest();
 
         return new QrCodeResult()
         {
+            Points = qrCode.Points,
             Team = team,
             FunFact = qrCode.FunFact,
         };
@@ -71,6 +72,7 @@ public class QrCodeResult
 {
     public Team Team { get; set; }
     public FunFact FunFact { get; set; }
+    public int Points { get; set; }
 }
 
 public record QrCodeScanned(string Data);

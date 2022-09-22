@@ -10,8 +10,8 @@ getTrivia().then(x => results.value = x)
 <template>
   <div v-if="results?.length">
     <div v-for="result in results" :key="result.title">
-      <div>{{result.title}}</div>
-      <div>{{result.content}}</div>
+      <div class="text-2xl text-white">{{result.title}}</div>
+      <div class="mt-3 text-xl text-white">{{result.content}}</div>
     </div>
   </div>
   <div v-else class="font-bold text-2xl text-white my-auto h-full flex">
