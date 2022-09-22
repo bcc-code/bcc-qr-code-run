@@ -309,13 +309,13 @@ module "api_container_app" {
     configuration      = {
       ingress          = {
         external       = true
-        targetPort     = 5125
+        targetPort     = 80
       }
       dapr             = {
         enabled        = true
         appId          = "${local.resource_prefix}-api"
         appProtocol    = "http"
-        appPort        = 5125
+        appPort        = 80
       }
       secrets          = [
           {
@@ -479,7 +479,7 @@ module "directus_container_app" {
     template          = {
       containers      = [{
         image         = "directus/directus:latest"
-        name          = "universal-games-directus"
+        name          = "${local.resource_prefix}-directus"
         env           = [{
           name        = "APP_PORT"
           value       = 8055
