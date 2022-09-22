@@ -554,7 +554,7 @@ module "directus_container_app" {
         },
         {
           name        = "CACHE_ENABLED"
-          value       = true
+          value       = false
         },
         {
           name        = "CACHE_STORE"
