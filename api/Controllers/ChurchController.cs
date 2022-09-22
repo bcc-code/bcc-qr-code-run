@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 namespace api.Controllers;
 
 [ApiController]
+[Route("api")]
 public class ChurchController : ControllerBase
 {
     private readonly DataContext _context;

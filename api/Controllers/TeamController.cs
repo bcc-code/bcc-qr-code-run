@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace api.Controllers;
 
 [ApiController]
-[Route("team")]
+[Route("api/team")]
 public class TeamEndpoint : ControllerBase
 {
     private readonly ILogger<TeamEndpoint> _logger;

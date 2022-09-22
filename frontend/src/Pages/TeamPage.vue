@@ -3,6 +3,10 @@
 import Status from "./Status.vue";
 import Results from "./Results.vue";
 import { store } from "../api/teamApi";
+import Trivia from "./Trivia.vue";
+import {ref} from "vue";
+
+const selectedTab = ref(1);
 
 </script>
 
@@ -14,11 +18,21 @@ import { store } from "../api/teamApi";
     </div>
 
     <div class="px-10 py-5 space-y-4">
-      <div class="text-3xl font-bold text-white drop-shadow-md">
-        Status
+      <div class="drop-shadow-md">
+        <select v-model="selectedTab" class="w-full rounded-md bg-interactive text-brown text-2xl font-bold">
+          <option class="font-medium text-base" :value="1">Status</option>
+          <option class="font-medium text-base" :value="2">Resultater</option>
+          <option class="font-medium text-base" :value="3">Kart</option>
+          <option class="font-medium text-base" :value="4">Triva</option>
+        </select>
       </div>
+
       
-      <Status/>
+
+      <Status v-if="selectedTab===1"/>
+      <Results v-if="selectedTab===2"/>
+      <div v-if="selectedTab===3">Map</div>
+      <Trivia v-if="selectedTab===4"/>
       
     </div>
 

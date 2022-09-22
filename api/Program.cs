@@ -27,7 +27,7 @@ builder.Services.AddAuthentication(options =>
 }).AddCookie("Cookies", options =>
 {
     options.Cookie.Name = "team_cookie";
-    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SameSite = SameSiteMode.Strict;
     options.Events = new CookieAuthenticationEvents()
     {
         OnRedirectToLogin = recontext =>
@@ -41,13 +41,6 @@ builder.Services.AddCookiePolicy(options => options.Secure = CookieSecurePolicy.
 
 var redis = ConnectionMultiplexer.Connect(builder.Configuration.GetValue<string>("REDIS_CONNECTION_STRING"));
 builder.Services.AddDataProtection().PersistKeysToStackExchangeRedis(redis, "bcc-code-run-dataprotection-keys");
-
-//if (!builder.Environment.IsDevelopment())
-//{
-//    builder.Services.AddDataProtection()
-//        .SetApplicationName("QR-App")
-//        .PersistKeysToAzureBlobStorage(builder.Configuration.GetConnectionString("Storage"), "keys", "dataprotection");
-//}
 
 builder.Services.AddCors();
 
