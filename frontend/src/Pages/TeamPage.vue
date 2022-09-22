@@ -17,23 +17,20 @@ const selectedTab = ref(1);
       <h1 class="text-accent">{{store.team?.teamName}}</h1>
     </div>
 
-    <div class="px-10 py-5 space-y-4">
-      <div class="drop-shadow-md">
-        <select v-model="selectedTab" class="w-full rounded-md bg-interactive text-brown text-2xl font-bold">
-          <option class="font-medium text-base" :value="1">Status</option>
-          <option class="font-medium text-base" :value="2">Resultater</option>
-          <option class="font-medium text-base" :value="3">Kart</option>
-          <option class="font-medium text-base" :value="4">Triva</option>
-        </select>
-      </div>
+    <div class="px-10 py-5">
+      <select v-model="selectedTab" class="w-full rounded-md bg-interactive text-brown text-2xl font-bold">
+        <option class="font-medium text-base" :value="1">Status</option>
+        <option class="font-medium text-base" :value="2">Resultater</option>
+        <option class="font-medium text-base" :value="3">Kart</option>
+        <option class="font-medium text-base" :value="4">Triva</option>
+      </select>
+    </div>
 
-      
-
-      <Status v-if="selectedTab===1"/>
-      <Results v-if="selectedTab===2"/>
-      <div v-if="selectedTab===3">Map</div>
-      <Trivia v-if="selectedTab===4"/>
-      
+    <div class="px-10 py-5 space-y-4 mb-3 h-full overflow-y-scroll scrollbox">
+        <Status v-if="selectedTab===1"/>
+        <Results v-if="selectedTab===2"/>
+        <div v-if="selectedTab===3">Map</div>
+        <Trivia v-if="selectedTab===4"/>
     </div>
 
     <div class="flex-1 flex items-end px-4 pb-20">
@@ -42,3 +39,21 @@ const selectedTab = ref(1);
 
   </div>
 </template>
+
+<style>
+.scrollbox {
+  background:
+      linear-gradient(theme("colors.background") 30%, rgba(255, 255, 255, 0)),
+      linear-gradient(rgba(255, 255, 255, 0), theme("colors.background") 30%) 0 100%,
+      linear-gradient(rgba(0,0,0,.2) 30%, rgba(255, 255, 255, 0)),
+      linear-gradient(rgba(255, 255, 255, 0), rgba(0,0,0,.2)) 0 100%;
+
+/*linear-gradient(rgba(0,0,0,.2) 30%, rgba(255, 255, 255, 0)),*/
+/*linear-gradient(rgba(255, 255, 255, 0) 30%, rgba(0,0,0,0.2)) 0 100%;*/
+  
+  background-repeat: no-repeat;
+  background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
+  /*!* Opera doesn't support this in the shorthand *!*/
+  background-attachment: local, local, scroll, scroll;
+}
+</style>

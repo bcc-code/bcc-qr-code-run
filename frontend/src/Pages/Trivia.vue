@@ -14,7 +14,9 @@ getTrivia().then(x => results.value = x)
       <div>{{result.content}}</div>
     </div>
   </div>
-  <div v-else class="font-bold text-2xl text-white">
-    Du har ikke skannet noen QR koder enda
+  <div v-else class="font-bold text-2xl text-white my-auto h-full flex">
+    <div class="my-auto">
+      Du har ikke skannet noen QR koder enda
+    </div>
   </div>
 </template>
