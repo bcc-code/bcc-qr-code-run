@@ -551,19 +551,19 @@ module "directus_container_app" {
         {
           name        = "DB_PASSWORD"
           secretRef   = "postgresql-password"
-        },
-        {
-          name        = "CACHE_ENABLED"
-          value       = false
-        },
-        {
-          name        = "CACHE_STORE"
-          value       = "redis"
-        },
-        {
-          name        = "CACHE_REDIS"
-          secretRef   = "redis-connection-string"
-        }
+        }#,
+        # {
+        #   name        = "CACHE_ENABLED"
+        #   value       = false
+        # },
+        # {
+        #   name        = "CACHE_STORE"
+        #   value       = "redis"
+        # },
+        # {
+        #   name        = "CACHE_REDIS"
+        #   secretRef   = "redis-connection-string"
+        # }
         
         ]
         resources     = {
