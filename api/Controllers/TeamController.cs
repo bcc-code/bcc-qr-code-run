@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace api.Controllers;
 
 [ApiController]
-[Route("team")]
+[Route("api/team")]
 public class TeamEndpoint : ControllerBase
 {
     private readonly ILogger<TeamEndpoint> _logger;
@@ -53,8 +53,13 @@ public class TeamEndpoint : ControllerBase
             new Claim(ClaimTypes.Name, team.Id.ToString()),
         }, "Cookies");
 
+        var authProperties = new AuthenticationProperties
+        {
+            IsPersistent = true,
+        };
+
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-        await Request.HttpContext.SignInAsync("Cookies", claimsPrincipal);
+        await Request.HttpContext.SignInAsync("Cookies", claimsPrincipal, authProperties);
 
         return team;
     }

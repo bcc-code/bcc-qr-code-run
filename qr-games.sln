@@ -12,10 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{64B7A2C5-DD64-4534-B64B-04CE6AE35A37}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{29BC7D26-BF06-4BA0-9D32-1FD56AA73668}"
-	ProjectSection(SolutionItems) = preProject
-		tye.yaml = tye.yaml
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReverseProxy", "ReverseProxy\ReverseProxy.csproj", "{1EE763C0-B545-4ECB-ACA1-A6CA76EBD8EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +28,10 @@ Global
 		{64B7A2C5-DD64-4534-B64B-04CE6AE35A37}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64B7A2C5-DD64-4534-B64B-04CE6AE35A37}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{64B7A2C5-DD64-4534-B64B-04CE6AE35A37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EE763C0-B545-4ECB-ACA1-A6CA76EBD8EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EE763C0-B545-4ECB-ACA1-A6CA76EBD8EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EE763C0-B545-4ECB-ACA1-A6CA76EBD8EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EE763C0-B545-4ECB-ACA1-A6CA76EBD8EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

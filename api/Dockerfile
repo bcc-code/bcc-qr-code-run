@@ -15,9 +15,9 @@ USER appuser
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0-focal AS build
 WORKDIR /src
-COPY ["api/api.csproj", "api/"]
+COPY ["api.csproj", "api/"]
 RUN dotnet restore "api/api.csproj"
-COPY . .
+COPY . "api/"
 WORKDIR "/src/api"
 RUN dotnet build "api.csproj" -c Release -o /app/build
 

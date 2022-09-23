@@ -1,3 +1,3 @@
-﻿const baseUrl = "https://localhost:7065";
+﻿const baseUrl = "https://localhost:7298/api";
 
 export default baseUrl
