@@ -282,7 +282,7 @@ resource "azapi_resource" "static_app" {
   # for_each  = {for app in var.container_apps: app.name => app}
 
   name      = "${local.resource_prefix}-frontend"
-  location  = var.location
+  location  = "WestEurope"
   parent_id = azurerm_resource_group.rg.id
   type      = "Microsoft.Web/staticSites@2021-01-01"
   
@@ -437,13 +437,13 @@ module "api_container_app" {
 
 resource "azuread_application" "deploy-app" {
   display_name = "github-actions-bcc-code-run-deploy"
-  owners       = [data.azuread_client_config.current.object_id]
+  owners       = [data.azurerm_client_config.current.object_id]
 }
 
 resource "azuread_service_principal" "deploy-app" {
   application_id               = azuread_application.deploy-app.application_id
   app_role_assignment_required = false
-  owners                       = [data.azuread_client_config.current.object_id]
+  owners                       = [data.azurerm_client_config.current.object_id]
 }
 
 resource "azuread_service_principal_password" "deploy-app" {
@@ -465,8 +465,8 @@ resource "azapi_resource" "api_deployment" {
         azureCredentials = {
           clientId        = azuread_service_principal_password.deploy-app.key_id
           clientSecret    = azuread_service_principal_password.deploy-app.value
-          subscriptionId  = data.azuread_client_config.subscription_id
-          tenantId        = data.azuread_client_config.tenant_id
+          subscriptionId  = data.azurerm_client_config.subscription_id
+          tenantId        = data.azurerm_client_config.tenant_id
         }
         contextPath   = "."
         image         = "bccplatform.azurecr.io/bcc-code-run-prod-api"
