@@ -465,17 +465,17 @@ resource "azapi_resource" "api_deployment" {
         azureCredentials = {
           clientId        = azuread_service_principal_password.deploy-app.key_id
           clientSecret    = azuread_service_principal_password.deploy-app.value
-          subscriptionId  = data.azurerm_client_config.subscription_id
-          tenantId        = data.azurerm_client_config.tenant_id
+          subscriptionId  = data.azurerm_client_config.current.subscription_id
+          tenantId        = data.azurerm_client_config.current.tenant_id
         }
         contextPath   = "."
         image         = "bccplatform.azurecr.io/bcc-code-run-prod-api"
         os            = "Linux"
         publishType   = "Image"
         registryInfo  = {
-          registryPassword = azurerm_container_registry.acr.admin_password 
-          registeryUrl     = azurerm_container_registry.acr.login_server
-          registeryUserName = azurerm_container_registry.acr.admin_username
+          registryPassword = data.azurerm_container_registry.acr.admin_password 
+          registeryUrl     = data.azurerm_container_registry.acr.login_server
+          registeryUserName = data.azurerm_container_registry.acr.admin_username
         }
         type          = "Microsoft.App/containerApps"
       }
