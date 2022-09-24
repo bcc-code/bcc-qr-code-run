@@ -187,6 +187,7 @@ resource "azurerm_key_vault_secret" "postgreql_user_password" {
   key_vault_id = data.azurerm_key_vault.keyvault.id
 }
 
+
 # Redis Cache
 resource "azurerm_redis_cache" "redis_cache" {
   name                = "${local.resource_prefix}-redis"
@@ -203,7 +204,7 @@ resource "azurerm_redis_cache" "redis_cache" {
   }
 }
 
-# Private DNS zone
+# Private DNS zone for connecting to redis via private endpoint
 
 resource "azurerm_private_dns_zone" "redis_dns_zone" {
   name                = "privatelink.redis.cache.windows.net"
@@ -230,6 +231,13 @@ resource "azurerm_private_endpoint" "redis_endpoint" {
       azurerm_private_dns_zone.redis_dns_zone.id
     ]
   }
+}
+
+locals {
+  redis_database_directus = 0
+  redis_database_api = 1
+  redis_connection_string_directus = "rediss://:${azurerm_redis_cache.redis_cache.primary_access_key}@${local.resource_prefix}-redis.privatelink.redis.cache.windows.net:${azurerm_redis_cache.redis_cache.ssl_port}/${local.redis_database_directus}"
+  redis_connection_string_api = "${local.resource_prefix}-redis.privatelink.redis.cache.windows.net:${azurerm_redis_cache.redis_cache.ssl_port},password=${azurerm_redis_cache.redis_cache.primary_access_key},ssl=True,abortConnect=False,defaultDatabase=${local.redis_database_api}"
 }
 
 # Analytics Workspace
@@ -270,16 +278,32 @@ module "container_apps_vlan" {
 
 # Create Static App for Frontend
 
-resource "azurerm_static_site" "ui" {
-  name                = "${local.resource_prefix}-ui"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = "westeurope"
-  sku_tier            = "Standard"
+resource "azapi_resource" "static_app" {
+  # for_each  = {for app in var.container_apps: app.name => app}
+
+  name      = "${local.resource_prefix}-frontend"
+  location  = var.location
+  parent_id = azurerm_resource_group.rg.id
+  type      = "Microsoft.Web/staticSites@2021-01-01"
+  
+  body = jsonencode({
+    properties: {
+      repositoryUrl = "https://github.com/bcc-code/bcc-qr-code-run"
+      branch        = "master"
+      repositoryToken = var.github-token
+      buildProperties = {
+        appLocation = "frontend"
+        appArtifactLocation = "dist"
+      }
+    }
+    tags  = local.tags
+    sku   = {
+      name = "Standard"
+      tier = "Standard"
+    }    
+  })
+  
 }
-
-
-
-# Create Azure Application for Github Deployment
 
 
 # Container Environment
@@ -296,6 +320,8 @@ module "container_apps_env"  {
 }
 
 
+#ref:
+# https://github.com/Azure/azure-resource-manager-schemas/blob/68af7da6820cc91660904b34813aeee606c400f1/schemas/2022-03-01/Microsoft.App.json
 
 # API Container App
 module "api_container_app" {
@@ -310,6 +336,13 @@ module "api_container_app" {
       ingress          = {
         external       = true
         targetPort     = 80
+        # customDomains  = [
+        #   {
+        #     bindingType   = "SniEnabled",
+        #     certificateId = "",
+        #     name          = "verdenrundt.no"
+        #   }
+        # ]
       }
       dapr             = {
         enabled        = true
@@ -324,7 +357,7 @@ module "api_container_app" {
           },
           {
             name    = "redis-connection-string"
-            value   =  azurerm_redis_cache.redis_cache.primary_connection_string
+            value   =  local.redis_connection_string_api
           },
           {
             name    = "application-insights-connection-string"
@@ -338,7 +371,7 @@ module "api_container_app" {
     }
     template          = {
       containers      = [{
-        image         = "hello-world:latest" // "bccplatform.azurecr.io/bcc-code-run-prod-api:latest"
+        image         = "bccplatform.azurecr.io/bcc-code-run-prod-api:latest"
         name          = "bcc-code-run-api"
         env           = [{
             name        = "APP_PORT"
@@ -402,6 +435,61 @@ module "api_container_app" {
   }
 }
 
+data "azurerm_client_config" "current" {
+}
+
+resource "azuread_application" "deploy-app" {
+  display_name = "github-actions-bcc-code-run-deploy"
+  owners       = [data.azuread_client_config.current.object_id]
+}
+
+resource "azuread_service_principal" "deploy-app" {
+  application_id               = azuread_application.deploy-app.application_id
+  app_role_assignment_required = false
+  owners                       = [data.azuread_client_config.current.object_id]
+}
+
+resource "azuread_service_principal_password" "deploy-app" {
+  service_principal_id = azuread_service_principal.deploy-app.object_id
+}
+
+resource "azapi_resource" "api_deployment" {
+  # for_each  = {for app in var.container_apps: app.name => app}
+
+  name      = "${local.resource_prefix}-api-deployment"
+  location  = var.location
+  parent_id = var.resource_group_id
+  type      = "Microsoft.App/containerApps_deployments@2022-03-01"
+  
+  body = jsonencode({
+    properties = {
+      branch  = "master"
+      githubActionConfiguration = {
+        azureCredentials = {
+          clientId        = azuread_service_principal_password.deploy-app.key_id
+          clientSecret    = azuread_service_principal_password.deploy-app.value
+          subscriptionId  = data.azuread_client_config.subscription_id
+          tenantId        = data.azuread_client_config.tenant_id
+        }
+        contextPath   = "."
+        image         = "bccplatform.azurecr.io/bcc-code-run-prod-api"
+        os            = "Linux"
+        publishType   = "Image"
+        registryInfo  = {
+          registryPassword = azurerm_container_registry.acr.admin_password 
+          registeryUrl     = azurerm_container_registry.acr.login_server
+          registeryUserName = azurerm_container_registry.acr.admin_username
+        }
+        type          = "Microsoft.App/containerApps"
+      }
+      repoUrl = "https://github.com/bcc-code/bcc-qr-code-run"
+    }
+  })
+  
+  response_export_values = ["properties.configuration.ingress.fqdn"]
+
+}
+
 
 # File Storage for CMS (directus)
 
@@ -460,7 +548,7 @@ module "directus_container_app" {
         },
         {
           name    = "redis-connection-string"
-          value   =  "rediss://:${azurerm_redis_cache.redis_cache.primary_access_key}@${azurerm_redis_cache.redis_cache.hostname}:${azurerm_redis_cache.redis_cache.ssl_port}/0"
+          value   =  local.redis_connection_string_directus
         },
         {
           name    = "directus-admin-user-pw"

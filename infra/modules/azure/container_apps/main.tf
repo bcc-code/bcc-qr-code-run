@@ -52,6 +52,9 @@ data "azurerm_container_registry" "acr" {
   resource_group_name = "BCC-Platform"
 }
 
+#ref
+# https://raw.githubusercontent.com/Azure/azure-resource-manager-schemas/68af7da6820cc91660904b34813aeee606c400f1/schemas/2022-03-01/Microsoft.App.json
+
 resource "azapi_resource" "container_app" {
   # for_each  = {for app in var.container_apps: app.name => app}
 
@@ -59,9 +62,10 @@ resource "azapi_resource" "container_app" {
   location  = var.location
   parent_id = var.resource_group_id
   type      = "Microsoft.App/containerApps@2022-03-01"
-
+  
   body = jsonencode({
-    properties: {
+    properties = {
+
       managedEnvironmentId  = var.managed_environment_id
       configuration         = {
         registries = [{
@@ -77,6 +81,7 @@ resource "azapi_resource" "container_app" {
         dapr                = try(var.container_app.configuration.dapr, null)
       }
       template              = var.container_app.template
+      
     }
   })
   
