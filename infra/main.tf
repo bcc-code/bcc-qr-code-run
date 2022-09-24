@@ -371,7 +371,7 @@ module "api_container_app" {
     }
     template          = {
       containers      = [{
-        image         = "bccplatform.azurecr.io/bcc-code-run-prod-api:latest"
+        image         = "hello-world:latest" //"bccplatform.azurecr.io/bcc-code-run-prod-api:latest"
         name          = "bcc-code-run-api"
         env           = [{
             name        = "APP_PORT"
@@ -411,7 +411,7 @@ module "api_container_app" {
           },
           {
             name        = "ENVIRONMENT_NAME"
-            value   = terraform.workspace
+            value       = terraform.workspace
           } #,
           # {
           #   name        = "NEW_RELIC_LICENSE_KEY"
@@ -435,60 +435,61 @@ module "api_container_app" {
   }
 }
 
-resource "azuread_application" "deploy-app" {
-  display_name = "github-actions-bcc-code-run-deploy"
-  owners       = [data.azurerm_client_config.current.object_id]
-}
+## OBS: Requires Application.ReadWrite.All permission to be granted
+# resource "azuread_application" "deploy-app" {
+#   display_name = "github-actions-bcc-code-run-deploy"
+#   owners       = [data.azurerm_client_config.current.object_id]
+# }
 
-resource "azuread_service_principal" "deploy-app" {
-  application_id               = azuread_application.deploy-app.application_id
-  app_role_assignment_required = false
-  owners                       = [data.azurerm_client_config.current.object_id]
-}
+# resource "azuread_service_principal" "deploy-app" {
+#   application_id               = azuread_application.deploy-app.application_id
+#   app_role_assignment_required = false
+#   owners                       = [data.azurerm_client_config.current.object_id]
+# }
 
-resource "azuread_service_principal_password" "deploy-app" {
-  service_principal_id = azuread_service_principal.deploy-app.object_id
-}
+# resource "azuread_service_principal_password" "deploy-app" {
+#   service_principal_id = azuread_service_principal.deploy-app.object_id
+# }
 
-resource "azapi_resource" "api_deployment" {
-  # for_each  = {for app in var.container_apps: app.name => app}
+# resource "azapi_resource" "api_deployment" {
+#   # for_each  = {for app in var.container_apps: app.name => app}
 
-  name      = "${local.resource_prefix}-api-deployment"
-  location  = local.location
-  parent_id = module.api_container_app.id
-  type      = "Microsoft.App/containerApps_deployments@2022-03-01"
-  depends_on = [
-    azuread_service_principal_password.deploy-app
-  ]
+#   name      = "${local.resource_prefix}-api-deployment"
+#   location  = local.location
+#   parent_id = module.api_container_app.id
+#   type      = "Microsoft.App/containerApps_deployments@2022-03-01"
+#   depends_on = [
+#     azuread_service_principal_password.deploy-app
+#   ]
   
-  body = jsonencode({
-    properties = {
-      branch  = "master"
-      githubActionConfiguration = {
-        azureCredentials = {
-          clientId        = azuread_service_principal_password.deploy-app.key_id
-          clientSecret    = azuread_service_principal_password.deploy-app.value
-          subscriptionId  = data.azurerm_client_config.current.subscription_id
-          tenantId        = data.azurerm_client_config.current.tenant_id
-        }
-        contextPath   = "."
-        image         = "bccplatform.azurecr.io/bcc-code-run-prod-api"
-        os            = "Linux"
-        publishType   = "Image"
-        registryInfo  = {
-          registryPassword = data.azurerm_container_registry.acr.admin_password 
-          registeryUrl     = data.azurerm_container_registry.acr.login_server
-          registeryUserName = data.azurerm_container_registry.acr.admin_username
-        }
-        type          = "Microsoft.App/containerApps"
-      }
-      repoUrl = "https://github.com/bcc-code/bcc-qr-code-run"
-    }
-  })
+#   body = jsonencode({
+#     properties = {
+#       branch  = "master"
+#       githubActionConfiguration = {
+#         azureCredentials = {
+#           clientId        = azuread_service_principal_password.deploy-app.key_id
+#           clientSecret    = azuread_service_principal_password.deploy-app.value
+#           subscriptionId  = data.azurerm_client_config.current.subscription_id
+#           tenantId        = data.azurerm_client_config.current.tenant_id
+#         }
+#         contextPath   = "."
+#         image         = "bccplatform.azurecr.io/bcc-code-run-prod-api"
+#         os            = "Linux"
+#         publishType   = "Image"
+#         registryInfo  = {
+#           registryPassword = data.azurerm_container_registry.acr.admin_password 
+#           registeryUrl     = data.azurerm_container_registry.acr.login_server
+#           registeryUserName = data.azurerm_container_registry.acr.admin_username
+#         }
+#         type          = "Microsoft.App/containerApps"
+#       }
+#       repoUrl = "https://github.com/bcc-code/bcc-qr-code-run"
+#     }
+#   })
   
-  response_export_values = ["properties.configuration.ingress.fqdn"]
+#   response_export_values = ["properties.configuration.ingress.fqdn"]
 
-}
+# }
 
 
 # File Storage for CMS (directus)
