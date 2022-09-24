@@ -5,6 +5,12 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "3.3.0"
     }
+
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = "~> 2.15.0"
+    }
+
     azapi = {
       source  = "Azure/azapi"
       version = "0.4.0"
@@ -30,6 +36,10 @@ provider "azurerm" {
 }
 
 provider "azapi" {
+}
+
+provider "azuread" {
+  #tenant_id = "00000000-0000-0000-0000-000000000000"
 }
 
 provider "postgresql" {
