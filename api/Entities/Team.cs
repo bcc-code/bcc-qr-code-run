@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using api.Data;
 using api.Controllers;
@@ -34,6 +36,7 @@ public class Team
 
     public DateTime? FirstScannedQrCode { get; set; }
     public DateTime? LastScannedQrCode { get; set; }
+    [JsonConverter(typeof(SimpleTimespanConverter))]
     public TimeSpan? TimeSpent => LastScannedQrCode - FirstScannedQrCode;
 
 
@@ -62,3 +65,19 @@ public record Score(int Id, int Points, bool IsSecret)
     [JsonIgnore]
     public Team Team { get; set; }
 };
+
+
+public class SimpleTimespanConverter : JsonConverter<TimeSpan>
+{
+    /// <inheritdoc />
+    public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        return TimeSpan.ParseExact(reader.GetString() ?? "", @"hh\:mm", CultureInfo.InvariantCulture);
+    }
+
+    /// <inheritdoc />
+    public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.ToString(@"hh\:mm"));
+    }
+}

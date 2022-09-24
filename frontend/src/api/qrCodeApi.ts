@@ -1,20 +1,28 @@
 ﻿import baseUrl from "./baseApi";
 import {Team} from "./teamApi";
 
-export async function scanCode(): Promise<QrCodeResult|number> {
+export async function scanCode(data:string): Promise<QrCodeResult|number> {
     const result = await fetch(`${baseUrl}/scan`, {
         method: "POST",
-        credentials: "include"
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        credentials: "include",
+        body: JSON.stringify({
+            "data": data,
+        })
     });
     
     if(result.ok) {
-        return await result.json()
+        return (await result.json()) as QrCodeResult
     }
         
     else return result.status
 }
 
-interface QrCodeResult {
+export interface QrCodeResult {
+    points: number,
     team: Team,
     funFact: FunFact
 }

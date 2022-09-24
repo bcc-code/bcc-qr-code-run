@@ -6,8 +6,8 @@ services:
   api:
     image: coderunapi
     build:
-      context: .
-      dockerfile: api/Dockerfile
+      context: api
+      dockerfile: Dockerfile
     ports:
       - 5125:80
     environment:

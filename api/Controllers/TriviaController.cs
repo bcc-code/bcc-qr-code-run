@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace api.Controllers;
 
 [ApiController]
-[Route("Trivia")]
+[Route("api")]
 public class TriviaController : ControllerBase
 {
     private readonly DataContext _context;
