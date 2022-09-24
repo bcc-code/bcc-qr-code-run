@@ -388,7 +388,7 @@ module "api_container_app" {
     }
     template          = {
       containers      = [{
-        image         = "bccplatform.azurecr.io/bcc-code-run-prod-api:latest" //"hello-world:latest"
+        image         = "hello-world:latest" //"bccplatform.azurecr.io/bcc-code-run-prod-api:latest"
         name          = "bcc-code-run-api"
         env           = [{
             name        = "APP_PORT"

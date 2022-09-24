@@ -35,9 +35,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags:
-            - bccplatform.azurecr.io/qr-code-run-prod-api:${{ github.sha }}
-            - bccplatform.azurecr.io/qr-code-run-prod-api:latest  
+          tags: bccplatform.azurecr.io/qr-code-run-prod-api:${{ github.sha }},bccplatform.azurecr.io/qr-code-run-prod-api:latest  
           file: api/Dockerfile
           context: api
 
