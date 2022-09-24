@@ -253,8 +253,8 @@ resource "azurerm_private_endpoint" "redis_endpoint" {
 locals {
   redis_database_directus = 0
   redis_database_api = 1
-  redis_connection_string_directus = "rediss://:${azurerm_redis_cache.redis_cache.primary_access_key}@${local.resource_prefix}-redis.privatelink.redis.cache.windows.net:${azurerm_redis_cache.redis_cache.ssl_port}/${local.redis_database_directus}"
-  redis_connection_string_api = "${local.resource_prefix}-redis.privatelink.redis.cache.windows.net:${azurerm_redis_cache.redis_cache.ssl_port},password=${azurerm_redis_cache.redis_cache.primary_access_key},ssl=True,abortConnect=False,defaultDatabase=${local.redis_database_api}"
+  redis_connection_string_directus = "rediss://:${azurerm_redis_cache.redis_cache.primary_access_key}@${local.resource_prefix}-redis.redis.cache.windows.net:${azurerm_redis_cache.redis_cache.ssl_port}/${local.redis_database_directus}"
+  redis_connection_string_api = "${local.resource_prefix}-redis.redis.cache.windows.net:${azurerm_redis_cache.redis_cache.ssl_port},password=${azurerm_redis_cache.redis_cache.primary_access_key},ssl=True,abortConnect=False,defaultDatabase=${local.redis_database_api}"
 }
 
 # Analytics Workspace
