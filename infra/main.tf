@@ -455,8 +455,11 @@ resource "azapi_resource" "api_deployment" {
 
   name      = "${local.resource_prefix}-api-deployment"
   location  = local.location
-  parent_id = azurerm_resource_group.rg.id
+  parent_id = module.api_container_app.id
   type      = "Microsoft.App/containerApps_deployments@2022-03-01"
+  depends_on = [
+    azuread_service_principal_password.deploy-app
+  ]
   
   body = jsonencode({
     properties = {
