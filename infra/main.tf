@@ -221,6 +221,13 @@ resource "azurerm_private_dns_zone" "redis_dns_zone" {
   resource_group_name = local.resource_group
 }
 
+resource "azurerm_private_dns_zone_virtual_network_link" "redis_dns_zone" {
+  name                  = "test"
+  resource_group_name   = local.resource_group
+  private_dns_zone_name = azurerm_private_dns_zone.redis_dns_zone.name
+  virtual_network_id    = module.container_apps_vlan.id
+}
+
 # Redis private endpoint
 resource "azurerm_private_endpoint" "redis_endpoint" {
   name                = "${local.resource_prefix}-redis-endpoint"
