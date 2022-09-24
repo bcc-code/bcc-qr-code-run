@@ -435,9 +435,6 @@ module "api_container_app" {
   }
 }
 
-data "azurerm_client_config" "current" {
-}
-
 resource "azuread_application" "deploy-app" {
   display_name = "github-actions-bcc-code-run-deploy"
   owners       = [data.azuread_client_config.current.object_id]
