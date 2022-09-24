@@ -454,8 +454,8 @@ resource "azapi_resource" "api_deployment" {
   # for_each  = {for app in var.container_apps: app.name => app}
 
   name      = "${local.resource_prefix}-api-deployment"
-  location  = var.location
-  parent_id = var.resource_group_id
+  location  = local.location
+  parent_id = azurerm_resource_group.rg.id
   type      = "Microsoft.App/containerApps_deployments@2022-03-01"
   
   body = jsonencode({
