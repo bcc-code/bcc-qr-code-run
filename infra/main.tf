@@ -352,7 +352,7 @@ module "api_container_app" {
     configuration      = {
       ingress          = {
         external       = true
-        targetPort     = 80
+        targetPort     = 5130
         # customDomains  = [
         #   {
         #     bindingType   = "SniEnabled",
@@ -365,7 +365,7 @@ module "api_container_app" {
         enabled        = true
         appId          = "${local.resource_prefix}-api"
         appProtocol    = "http"
-        appPort        = 80
+        appPort        = 5130
       }
       secrets          = [
           {
@@ -392,7 +392,11 @@ module "api_container_app" {
         name          = "bcc-code-run-api"
         env           = [{
             name        = "APP_PORT"
-            value       = 80
+            value       = 5130
+          },
+          {
+            name        = "ASPNETCORE_URLS"
+            value       = "http://+:5130"
           },
           {
             name        = "POSTGRES_HOST"

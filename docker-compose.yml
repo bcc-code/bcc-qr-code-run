@@ -9,7 +9,7 @@ services:
       context: api
       dockerfile: Dockerfile
     ports:
-      - 5125:80
+      - 5130:80
     environment:
       - POSTGRES_PORT=5432
       - POSTGRES_DB=bcc-code-run
