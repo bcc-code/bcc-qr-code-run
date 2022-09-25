@@ -1,3 +1,3 @@
-﻿const baseUrl = process.env.VUE_APP_API_BASE_URI;
+﻿const baseUrl = "https://localhost:7298/api";
 
 export default baseUrl
