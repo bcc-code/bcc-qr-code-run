@@ -714,7 +714,6 @@ module "gateway" {
 module "api_route" {
   source                = "./modules/azure/front_door_route"
   name                  = "${local.resource_prefix}-api-route"
-  location              = local.location
   tag                   = local.tags
   front_door_name       = module.gateway.name 
   origin_host           = module.api_container_app.domain_name
@@ -727,7 +726,6 @@ module "api_route" {
 module "frontend_route" {
   source                = "./modules/azure/front_door_route"
   name                  = "${local.resource_prefix}-frontend-route"
-  location              = local.location
   tag                   = local.tags
   front_door_name       = module.gateway.name 
   origin_host           = jsondecode(azapi_resource.static_app.output).properties.defaultHostname
