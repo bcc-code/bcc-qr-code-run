@@ -619,8 +619,12 @@ module "directus_container_app" {
           secretRef   = "azure-storage-key"
         },
         {
+          name        = "STORAGE_AZ_ROOT"
+          value       = ""
+        },
+        {
           name        = "STORAGE_AZ_ENDPOINT"
-          value       = azurerm_storage_account.file_storage.primary_web_endpoint
+          value       = azurerm_storage_account.file_storage.primary_blob_endpoint
         },
         {
           name        = "SECRET"
