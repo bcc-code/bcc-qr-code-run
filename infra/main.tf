@@ -703,7 +703,7 @@ module "gateway" {
   source                = "./modules/azure/front_door"
   name                  = "${local.resource_prefix}-gateway"
   location              = local.location
-  tag                   = local.tags
+  tags                   = local.tags
   endpoint_domain_name  = "jordenrundt.bcc.no"
   endpoint_name         = "default"
   resource_group_id     = azurerm_resource_group.rg.id
