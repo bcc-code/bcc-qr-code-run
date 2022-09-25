@@ -44,10 +44,12 @@ data "azapi_resource" "endpoint_domain" {
   type      = "Microsoft.Cdn/profiles/customdomains@2021-06-01"
 }
 
+data "azurerm_client_config" "current" {}
+
 resource "azapi_resource" "origin_group" {
 
   name      = "${var.name}-origin-group"
-  parent_id = "/subscriptions/a77a3461-9212-44cf-bc6a-11c6281797e9/resourceGroups/BCC-Platform-dev/providers/Microsoft.Cdn/profiles/bcc-platform-dev-frontdoor" 
+  parent_id = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${data.azapi_resource.rg.name}/providers/Microsoft.Cdn/profiles/${var.front_door_name}" 
   #data.azapi_resource.frontdoor_profile.id
   type      = "Microsoft.Cdn/profiles/origingroups@2021-06-01"
 
@@ -142,7 +144,7 @@ resource "azapi_resource" "origin" {
 
 resource "azurerm_resource_group_template_deployment" "origin_route" {
   name                = "${var.name}_deployment"
-  resource_group_name = "BCC-Platform-dev"
+  resource_group_name = "${data.azapi_resource.rg.name}"
   deployment_mode     = "Incremental"
   parameters_content = jsonencode({
     "frontdoor_name" = {
