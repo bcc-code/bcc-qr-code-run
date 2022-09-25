@@ -1,4 +1,3 @@
-﻿const meta: any = import.meta;
-const baseUrl = meta.env.VITE_API_BASE_URL;
+﻿const baseUrl = process.env.VUE_APP_API_BASE_URI;
 
 export default baseUrl
