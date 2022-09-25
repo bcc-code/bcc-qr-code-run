@@ -1,3 +1,3 @@
-﻿const baseUrl = "https://localhost:7298/api";
+﻿const baseUrl = __API_BASE_PATH__;
 
 export default baseUrl
