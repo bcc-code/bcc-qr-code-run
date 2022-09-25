@@ -10,7 +10,7 @@ const showRegister = ref(false);
 <template>
   <RegisterTeam v-if="showRegister" />
 
-  <div v-else class="bg-background h-screen">
+  <div v-else class="bg-background min-h-screen">
     <div class="mx-auto">
       <div class="relative z-10">
         <div class="absolute inset-x-0 h-1/2 bg-light_background" aria-hidden="true" />
@@ -24,7 +24,7 @@ const showRegister = ref(false);
       <div class="mx-auto space-y-6 py-12 px-4">
         <h2 class="text-3xl font-bold tracking-tight text-white" id="join-heading">QR-løp - jorden rundt</h2>
         <p class="text-lg text-white">Bli med på en reise jorden rundt. Varius facilisi mauris sed sit. Non sed et duis dui leo, vulputate id malesuada non. Cras aliquet purus dui laoreet diam sed lacus, fames.</p>
-        <a class="block w-full rounded-md bg-interactive py-3 px-5 text-center text-base font-medium text-brown shadow-md active:bg-accept2 active:text-white" @click="showRegister = true">Registrer deg</a>
+        <a class="block w-full rounded-md bg-interactive py-3 px-5 text-center text-base font-medium text-brown shadow-md active:bg-interactive_active active:text-white" @click="showRegister = true">Registrer deg</a>
       </div>
     </div>
   </div>

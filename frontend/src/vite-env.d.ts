@@ -1,6 +1,5 @@
 /// <reference types="vite/client" />
 
-declare const __API_BASE_PATH__: string
 
 declare module '*.vue' {
   import type { DefineComponent } from 'vue'
