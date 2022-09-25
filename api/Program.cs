@@ -10,45 +10,45 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 
-// builder.Services.AddDbContext<DataContext>();
+builder.Services.AddDbContext<DataContext>();
 
-// builder.Services.AddStackExchangeRedisCache(options =>
-// {
-//     options.Configuration = builder.Configuration.GetValue<string>("REDIS_CONNECTION_STRING");
-//     options.InstanceName = builder.Configuration.GetValue<string>("ENVIRONMENT_NAME");
-// });
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetValue<string>("REDIS_CONNECTION_STRING");
+    options.InstanceName = builder.Configuration.GetValue<string>("ENVIRONMENT_NAME");
+});
 
-// builder.Services.AddMemoryCache();
+builder.Services.AddMemoryCache();
 
 
-// builder.Services.AddAuthentication(options =>
-// {
-//     options.DefaultScheme = "Cookies";
-// }).AddCookie("Cookies", options =>
-// {
-//     options.Cookie.Name = "team_cookie";
-//     options.Cookie.SameSite = SameSiteMode.Strict;
-//     options.Events = new CookieAuthenticationEvents()
-//     {
-//         OnRedirectToLogin = recontext =>
-//         {
-//             recontext.HttpContext.Response.StatusCode = 401;
-//             return Task.CompletedTask;
-//         },
-//     };
-// });
-// builder.Services.AddCookiePolicy(options => options.Secure = CookieSecurePolicy.Always);
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = "Cookies";
+}).AddCookie("Cookies", options =>
+{
+    options.Cookie.Name = "team_cookie";
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Events = new CookieAuthenticationEvents()
+    {
+        OnRedirectToLogin = recontext =>
+        {
+            recontext.HttpContext.Response.StatusCode = 401;
+            return Task.CompletedTask;
+        },
+    };
+});
+builder.Services.AddCookiePolicy(options => options.Secure = CookieSecurePolicy.Always);
 
-// var redis = ConnectionMultiplexer.Connect(builder.Configuration.GetValue<string>("REDIS_CONNECTION_STRING"));
-// builder.Services.AddDataProtection().PersistKeysToStackExchangeRedis(redis, "bcc-code-run-dataprotection-keys");
+var redis = ConnectionMultiplexer.Connect(builder.Configuration.GetValue<string>("REDIS_CONNECTION_STRING"));
+builder.Services.AddDataProtection().PersistKeysToStackExchangeRedis(redis, "bcc-code-run-dataprotection-keys");
 
 builder.Services.AddCors();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-// builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
+builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
 
-// builder.Services.AddSingleton<CacheService>();
+builder.Services.AddSingleton<CacheService>();
 
 var app = builder.Build();
 
@@ -64,24 +64,24 @@ else
 }
 
 
-// app.UseCors(policy =>
-// {
-//     policy.AllowAnyHeader();
-//     policy.AllowAnyMethod();
-//     //policy.AllowAnyOrigin();
-//     policy.SetIsOriginAllowed(s => true);
-//     policy.AllowCredentials();
-// });
+app.UseCors(policy =>
+{
+    policy.AllowAnyHeader();
+    policy.AllowAnyMethod();
+    //policy.AllowAnyOrigin();
+    policy.SetIsOriginAllowed(s => true);
+    policy.AllowCredentials();
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-// using (var scope = app.Services.CreateScope())
-// {
-//     var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
-//     await dataContext.Database.MigrateAsync();
-// }
+using (var scope = app.Services.CreateScope())
+{
+    var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+    await dataContext.Database.MigrateAsync();
+}
 
 app.Run();
