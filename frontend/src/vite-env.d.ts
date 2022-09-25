@@ -7,4 +7,6 @@ declare module '*.vue' {
   export default component
 }
 
+declare module 'vue-application-insights'
+
 declare module 'vue3-qrcode-reader'
