@@ -301,7 +301,7 @@ resource "azapi_resource" "static_app" {
   name      = "${local.resource_prefix}-frontend"
   location  = "WestEurope"
   parent_id = azurerm_resource_group.rg.id
-  type      = "Microsoft.Web/staticSites@2021-01-01"
+  type      = "s@2021-01-01"
   
   body = jsonencode({
     properties: {
@@ -319,6 +319,9 @@ resource "azapi_resource" "static_app" {
       tier = "Standard"
     }    
   })
+  
+  response_export_values = ["properties.defaultHostname"]
+
   
 }
 
@@ -691,4 +694,45 @@ module "directus_container_app" {
       }
     }
   }
+}
+
+
+# Add gateway
+
+module "gateway" {
+  source                = "./modules/azure/front_door"
+  name                  = "${local.resource_prefix}-gateway"
+  location              = local.location
+  tag                   = local.tags
+  endpoint_domain_name  = "jordenrundt.bcc.no"
+  endpoint_name         = "default"
+  resource_group_id     = azurerm_resource_group.rg.id
+  
+}
+
+
+module "api_route" {
+  source                = "./modules/azure/front_door_route"
+  name                  = "${local.resource_prefix}-api-route"
+  location              = local.location
+  tag                   = local.tags
+  front_door_name       = module.gateway.name 
+  origin_host           = module.api_container_app.domain_name
+  route_path            = "api"
+  endpoint_name         = "default"
+  endpoint_domain_name  = "jordenrundt.bcc.no"
+  resource_group_id     = azurerm_resource_group.rg.id
+}
+
+module "frontend_route" {
+  source                = "./modules/azure/front_door_route"
+  name                  = "${local.resource_prefix}-frontend-route"
+  location              = local.location
+  tag                   = local.tags
+  front_door_name       = module.gateway.name 
+  origin_host           = jsondecode(azapi_resource.static_app.output).properties.defaultHostname
+  route_path            = ""
+  endpoint_name         = "default"
+  endpoint_domain_name  = "jordenrundt.bcc.no"
+  resource_group_id     = azurerm_resource_group.rg.id
 }
