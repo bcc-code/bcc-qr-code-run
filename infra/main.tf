@@ -301,7 +301,7 @@ resource "azapi_resource" "static_app" {
   name      = "${local.resource_prefix}-frontend"
   location  = "WestEurope"
   parent_id = azurerm_resource_group.rg.id
-  type      = "s@2021-01-01"
+  type      = "Microsoft.Web/staticSites@2022-03-01"
   
   body = jsonencode({
     properties: {
