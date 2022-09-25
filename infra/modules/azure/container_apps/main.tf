@@ -62,6 +62,7 @@ resource "azapi_resource" "container_app" {
   location  = var.location
   parent_id = var.resource_group_id
   type      = "Microsoft.App/containerApps@2022-03-01"
+  tags      = var.tags
   
   body = jsonencode({
     properties = {
