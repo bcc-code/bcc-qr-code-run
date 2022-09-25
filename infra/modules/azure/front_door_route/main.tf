@@ -58,7 +58,7 @@ resource "azapi_resource" "origin_group" {
     properties = {
         healthProbeSettings = {
             probePath = "/"
-            probeIntervalInSeconds = 900
+            probeIntervalInSeconds = 255
             probeProtocol = "Https"
             probeRequestType = "HEAD"
         }
