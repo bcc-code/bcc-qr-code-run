@@ -716,7 +716,8 @@ module "api_route" {
   name                  = "${local.resource_prefix}-api-route"
   front_door_name       = "${local.resource_prefix}-gateway"
   origin_host           = module.api_container_app.domain_name
-  route_path            = "api"
+  route_path            = "/api/*"
+  origin_path           = "/api/" 
   endpoint_name         = "default"
   endpoint_domain_name  = "jordenrundt.bcc.no"
   resource_group_id     = azurerm_resource_group.rg.id
@@ -730,7 +731,7 @@ module "frontend_route" {
   name                  = "${local.resource_prefix}-frontend-route"
   front_door_name       = "${local.resource_prefix}-gateway"
   origin_host           = jsondecode(azapi_resource.static_app.output).properties.defaultHostname
-  route_path            = ""
+  route_path            = "/*"
   endpoint_name         = "default"
   endpoint_domain_name  = "jordenrundt.bcc.no"
   resource_group_id     = azurerm_resource_group.rg.id

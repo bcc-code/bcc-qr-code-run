@@ -36,6 +36,13 @@ variable "route_path" {
   default     = null
 }
 
+variable "origin_path" {
+  description = "(Optional) Path on origin. Defaults to /"
+  type        = string
+  nullable    = true
+  default     = "/"
+}
+
 variable "tags" {
   description = "(Optional) Specifies the tags of the log analytics workspace"
   type        = map(any)

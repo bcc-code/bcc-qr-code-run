@@ -19,6 +19,7 @@ locals {
   }
   tags = merge(var.tags, local.module_tag)
   route_path = var.route_path == null ? "/${var.name}/*" : var.route_path
+  origin_path = var.origin_path == null ? "/" : var.origin_path
 }
 
 data "azapi_resource" "rg" {
@@ -57,7 +58,7 @@ resource "azapi_resource" "origin_group" {
     properties = {
         healthProbeSettings = {
             probePath = "/"
-            probeIntervalInSeconds = 100
+            probeIntervalInSeconds = 900
             probeProtocol = "Https"
             probeRequestType = "HEAD"
         }
@@ -159,6 +160,9 @@ resource "azurerm_resource_group_template_deployment" "origin_route" {
     "route_path" = {
       value = local.route_path
     }
+    "origin_path" = {
+      value = local.route_path
+    }
     "origin_group_name" = {
       value = azapi_resource.origin_group.name
     }
@@ -183,6 +187,9 @@ resource "azurerm_resource_group_template_deployment" "origin_route" {
         "route_path": {
             "type": "string"
         },
+        "origin_path": {
+            "type": "string"
+        },
         "origin_group_name": {
             "type": "string"
         },
@@ -203,7 +210,7 @@ resource "azurerm_resource_group_template_deployment" "origin_route" {
                 "originGroup": {
                     "id": "[resourceId('Microsoft.Cdn/profiles/origingroups', parameters('frontdoor_name'), parameters('origin_group_name'))]"
                 },
-                "originPath": "/",
+                "originPath": "[parameters('origin_path')]",
                 "ruleSets": [],
                 "supportedProtocols": [
                     "Http",
