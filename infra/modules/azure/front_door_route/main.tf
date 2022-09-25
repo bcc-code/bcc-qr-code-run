@@ -143,8 +143,12 @@ resource "azapi_resource" "origin" {
 
 # }
 
+resource "random_id" "id" {
+	  byte_length = 8
+}
+
 resource "azurerm_resource_group_template_deployment" "origin_route" {
-  name                = "${var.name}_deployment"
+  name                = "${var.name}_deployment_${random_id.id.hex}"
   resource_group_name = "${data.azapi_resource.rg.name}"
   deployment_mode     = "Incremental"
   parameters_content = jsonencode({
@@ -161,7 +165,7 @@ resource "azurerm_resource_group_template_deployment" "origin_route" {
       value = local.route_path
     }
     "origin_path" = {
-      value = local.route_path
+      value = local.origin_path
     }
     "origin_group_name" = {
       value = azapi_resource.origin_group.name
