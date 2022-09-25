@@ -1,0 +1,1 @@
+declare const __API_BASE_PATH__: string
