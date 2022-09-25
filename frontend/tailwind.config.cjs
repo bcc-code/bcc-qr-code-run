@@ -7,13 +7,14 @@ module.exports = {
   theme: {
     colors:{
       
-      "white": "#FFFFFF",
-      "light_background": "#efefef",
-      "background": "#bf7c2a",
-      "brown": "#734319",
+      "white": "#fffceb",
+      "light_background": "#fffceb",
+      "background": "#d19a48",
+      "brown": "#423e36",
       "interactive": "#f2ca80",
-      "accent": "#a6401b",
-      "accept2": "#f2ab27"
+      "interactive_active": "#e5be79",
+      "accent": "#cb7055",
+      "accept2": "#938b43"
     },
     extend: {},
   },

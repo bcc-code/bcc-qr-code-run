@@ -42,7 +42,7 @@ const showQrScan = ref(false);
       </div>
   
       <div class="flex-1 flex items-end px-4 pb-20">
-        <button class="block w-full rounded-md bg-interactive py-3 px-5 text-center text-xl font-medium text-brown shadow-md active:bg-accept2 active:text-white"
+        <button class="block w-full rounded-md bg-interactive py-3 px-5 text-center text-xl font-medium text-brown shadow-md active:bg-interactive_active active:text-white"
         @click="showQrScan=true">Skann QR Kode</button>
       </div>
 

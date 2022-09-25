@@ -19,8 +19,5 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     plugins: [vue(), mkcert()],
-    define: {
-      __API_BASE_PATH__: env.APP_API_BASE_PATH
-    }
   }
 })

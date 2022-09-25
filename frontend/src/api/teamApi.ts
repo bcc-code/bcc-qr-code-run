@@ -33,9 +33,15 @@ export async function login(teamName: string, churchName: string, members: numbe
                 "members": members
             })
         });
-        store.team = (await result.json()) as Team;
-        store.isLoggedIn = store.team !== null;
-        return store.team;
+        if(result.ok) {
+            store.team = (await result.json()) as Team;
+            store.isLoggedIn = store.team !== null;
+            return store.team;
+        }
+        else
+        {
+            return null
+        }
     } catch (e) {
         
     }

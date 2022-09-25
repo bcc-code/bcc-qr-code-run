@@ -36,8 +36,12 @@ async function onDecode(decodedString: string) {
 <template>
   <div>
     <div class="px-10 py-5">
-      <div class="text-interactive text-3xl font-bold" @click="$emit('close')">
-        Tilbake
+      <div class="text-white text-3xl font-bold flex items-center" @click="$emit('close')">
+        <svg class="aspect-1 w-5 mr-2 fill-white">
+          <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+        </svg>
+        <span class="flex-1">Tilbake</span>
+        
       </div>
     </div>
     
