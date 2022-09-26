@@ -10,7 +10,7 @@ getResults().then(x => results.value = x)
 
 <template>
   <div>
-    <dl class="text-xl text-white grid grid-cols-[1fr_auto]">
+    <dl class="text-xl text-brown grid grid-cols-[1fr_auto]">
       <template v-for="result in results" :key="result.church">
         <dt>{{result.church}}</dt>
         <dd>{{result.points}} poeng</dd>

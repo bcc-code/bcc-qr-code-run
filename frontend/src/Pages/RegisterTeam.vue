@@ -24,27 +24,27 @@ async function join() {
 </script>
 
 <template>
-  <div class="flex flex-col bg-background min-h-screen">
-    <div class="text-4xl font-bold text-brown bg-light_background py-5 px-4 drop-shadow">
-      <h1 class="drop-shadow shadow-accent">Jorden Rundt</h1>
+  <div class="flex flex-col  min-h-screen">
+    <div class="text-4xl font-bold text-accept2  py-5 px-4 drop-shadow">
+      <h1 class="color-accent text-center">Jorden Rundt</h1>
     </div>
     
     <div class="mx-auto px-4 py-5 space-y-4">
-      <div class="text-3xl font-bold text-white drop-shadow-md">
-        Registrer team
+      <div class="text-2xl font-bold text-brown text-center small-caps drop-shadow-md">
+        Registrer lag
       </div>
-      <div class="text-white text-2xl drop-shadow-md">
-        Fyll inn team-navn, menighet og antall deltakere 
+      <div class="text-brown text-xl drop-shadow-md">
+        Fyll inn lagnavn, menighet og antall deltakere 
       </div>
       
       <form class="space-y-3">
         <div class="space-y-2">
-          <label for="name" class="block text-sm font-medium text-white">Navn</label>
+          <label for="name" class="block text-sm font-medium text-brown">Lagnavn</label>
           <input required v-model="teamName" type="text" name="name" id="name" class="block rounded-md w-full border-0 px-3 py-2 shadow-sm focus-within:shadow-lg transition-shadow focus:ring-2 focus:ring-accent focus:ring-2" />
         </div>
 
         <div class="space-y-2">
-          <label for="church" class="block text-sm font-medium text-white">Menighet</label>
+          <label for="church" class="block text-sm font-medium text-brown">Menighet</label>
           <select v-model="churchName" id="church" name="church" class="mt-1 block w-full rounded-md border-0 py-2 pl-3 pr-10 text-base focus:outline-none focus:ring-2 focus:ring-accent">
             <option disabled selected>-- Velg menighet --</option>
             <option v-for="church in churches" :key="church">{{ church }}</option>
@@ -52,15 +52,15 @@ async function join() {
         </div>
 
         <div class="space-y-2">
-          <label for="members" class="block text-sm font-medium text-white">Deltakere</label>
-          <input required v-model="members" type="number" name="members" id="members" class="block rounded-md w-full border-0 px-3 py-2 shadow-sm focus-within:shadow-lg transition-shadow focus:ring-2 focus:ring-accent focus:ring-2" />
+          <label for="members" class="block text-sm font-medium text-white">Deltakere på laget (1-5)</label>
+          <input required v-model="members" type="number" min="1" max="5" name="members" id="members" class="block rounded-md w-full border-0 px-3 py-2 shadow-sm focus-within:shadow-lg transition-shadow focus:ring-2 focus:ring-accent focus:ring-2" />
         </div>
       </form>
       
-    </div>
+    </div> 
     
     <div class="flex-1 flex items-end px-4 pb-20">
-      <a class="block w-full rounded-md bg-interactive py-3 px-5 text-center text-base font-medium text-brown shadow-md active:bg-interactive_active active:text-white" @click="join">Bli med</a>
+      <a class="block w-full text-xl rounded-md bg-interactive py-3 px-5 text-center text-base font-medium text-brown shadow-md active:bg-interactive_active active:text-white" @click="join">Bli med</a>
     </div>
 
   </div>

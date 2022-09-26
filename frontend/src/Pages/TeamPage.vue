@@ -14,10 +14,9 @@ const showQrScan = ref(false);
 </script>
 
 <template>
-  <div class="flex flex-col bg-background h-screen">
-    <div class="text-4xl font-bold text-brown bg-light_background py-5 px-4 drop-shadow">
-      <h1 class="drop-shadow shadow-accent">Jorden Rundt med</h1>
-      <h1 class="text-accent">{{store.team?.teamName}}</h1>
+  <div class="flex flex-col h-screen">
+    <div class="text-4xl font-bold text-accept2 text-center py-5 px-4 drop-shadow">
+      <h1 class="text-accept2">Jorden Rundt </h1>
     </div>
     
     <template v-if="showQrScan">
@@ -25,8 +24,8 @@ const showQrScan = ref(false);
     </template>
     <template v-else>
 
-      <div class="px-10 py-5">
-        <select v-model="selectedTab" class="w-full rounded-md bg-interactive text-brown text-2xl font-bold">
+      <div class="px-10 py-3">
+        <select v-model="selectedTab" class="w-full rounded-md bg-interactive text-brown text-xl font-bold">
           <option class="font-medium text-base" :value="1">Status</option>
           <option class="font-medium text-base" :value="2">Resultater</option>
           <option class="font-medium text-base" :value="3">Kart</option>
@@ -54,7 +53,7 @@ const showQrScan = ref(false);
 
 <style>
 .scrollbox {
-  background:
+  /*background:
       linear-gradient(theme("colors.background") 30%, rgba(255, 255, 255, 0)),
       linear-gradient(rgba(255, 255, 255, 0), theme("colors.background") 30%) 0 100%,
       linear-gradient(rgba(0,0,0,.2) 30%, rgba(255, 255, 255, 0)),

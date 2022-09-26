@@ -10,7 +10,8 @@ myChurch().then(x=> churchResult.value = x)
 
 <template>
   <div>
-    <dl class="text-2xl text-white grid grid-cols-[1fr_auto] gap-3" v-if="store.team">
+    <h3 class="mt-0 mb-2 font-bold text-2xl text-brown">{{store.team?.teamName}}</h3>
+    <dl class="text-xl text-brown grid grid-cols-[1fr_auto] gap-3" v-if="store.team">
       <dt>Poeng</dt>
       <dd>{{store.team.score}}</dd>
 
@@ -25,9 +26,9 @@ myChurch().then(x=> churchResult.value = x)
     </dl>
 
     <template v-if="churchResult">
-      <h3 class="border-t border-interactive pt-5 mt-5 font-bold text-3xl text-white">{{ churchResult.churchName }}</h3>
+      <h3 class="border-t border-interactive pt-5 mt-5 font-bold text-2xl text-brown">{{ churchResult.churchName }}</h3>
   
-      <dl class="text-2xl text-white grid grid-cols-[1fr_auto] gap-3">
+      <dl class="text-xl text-brown grid grid-cols-[1fr_auto] gap-3">
         <dt>Lag</dt>
         <dd>{{churchResult.teams }}</dd>
   

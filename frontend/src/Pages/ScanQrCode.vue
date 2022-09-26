@@ -36,11 +36,11 @@ async function onDecode(decodedString: string) {
 <template>
   <div>
     <div class="px-10 py-5">
-      <div class="text-white text-3xl font-bold flex items-center" @click="$emit('close')">
+      <div class="text-brown text-3xl font-bold flex items-center" @click="$emit('close')">
         <svg class="aspect-1 w-5 mr-2 fill-white">
           <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
         </svg>
-        <span class="flex-1">Tilbake</span>
+        <span class="flex-1 block w-full text-xl rounded-md bg-interactive py-3 px-5 text-center text-base font-medium text-brown shadow-md active:bg-interactive_active active:text-white">Tilbake</span>
         
       </div>
     </div>
@@ -49,11 +49,11 @@ async function onDecode(decodedString: string) {
     
     <qrcode-stream @decode="onDecode" v-if="!scannedQrCode"/>
     <div v-else class="px-10 py-5">
-      <div class="text-4xl text-white font-bold">Gratulerer!</div>
-      <div class="text-white text-2xl mt-5">{{scannedQrCode.points}} poeng</div>
+      <div class="text-4xl text-brown font-bold">Gratulerer!</div>
+      <div class="text-brown text-2xl mt-5">{{scannedQrCode.points}} poeng</div>
       
-      <div class="mt-10 text-2xl text-white">{{scannedQrCode.funFact.title}}</div>
-      <div class="mt-3 text-xl text-white">{{scannedQrCode.funFact.content}}</div>
+      <div class="mt-10 text-2xl text-brown">{{scannedQrCode.funFact.title}}</div>
+      <div class="mt-3 text-xl text-brown">{{scannedQrCode.funFact.content}}</div>
     </div>
   </div>
 </template>

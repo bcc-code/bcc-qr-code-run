@@ -8,7 +8,7 @@ getLoggedInTeam()
 </script>
 <template>
 <!--  <TeamPage/>-->
-  <div>
+  <div class="img-background min-h-screen">
     <TeamPage v-if="store.isLoggedIn"></TeamPage>
     <LandingPage v-else/>
   <!--  <div class="container mx-auto">-->
@@ -25,3 +25,9 @@ getLoggedInTeam()
   <!--  </div>-->
   </div>
 </template>
+
+<style scoped>
+  .img-background {
+    background-image: url('hs22-bg.jpg');
+  }
+</style>
