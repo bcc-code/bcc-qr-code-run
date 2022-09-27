@@ -184,7 +184,7 @@ data "azurerm_resource_group" "platform_rg" {
 module "postgresql_db" {
   source             = "./modules/azure/postgresql_db"
   db_name            = local.resource_prefix
-  server_resource_id = data.azurerm_postgresql_flexible_server.postgresql_server.id
+  server_resource_id = azurerm_postgresql_flexible_server.postgresql.id
   depends_on = [
     azurerm_postgresql_flexible_server_firewall_rule.terraform_deploy_ip
   ]
@@ -403,7 +403,7 @@ module "api_container_app" {
           },
           {
             name        = "POSTGRES_HOST"
-            value       = data.azurerm_postgresql_flexible_server.postgresql_server.fqdn
+            value       = azurerm_postgresql_flexible_server.postgresql.fqdn
           },
           {
             name        = "APPLICATIONINSIGHTS_CONNECTION_STRING"
@@ -647,7 +647,7 @@ module "directus_container_app" {
         },
         {
           name        = "DB_HOST"
-          value       = data.azurerm_postgresql_flexible_server.postgresql_server.fqdn
+          value       = azurerm_postgresql_flexible_server.postgresql.fqdn
         },
         {
           name        = "DB_PORT"
@@ -723,7 +723,7 @@ module "api_route" {
   resource_group_id     = azurerm_resource_group.rg.id
   depends_on = [
     module.gateway,
-    azurerm_resource_group.rd
+    azurerm_resource_group.rg
   ]
 }
 
@@ -738,6 +738,6 @@ module "frontend_route" {
   resource_group_id     = azurerm_resource_group.rg.id
   depends_on = [
     module.gateway,
-    azurerm_resource_group.rd
+    azurerm_resource_group.rg
   ]
 }
