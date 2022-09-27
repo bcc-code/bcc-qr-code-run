@@ -50,10 +50,10 @@ provider "azuread" {
 
 provider "postgresql" {
   superuser = false
-  host      = azurerm_postgresql_flexible_server.postgresql.fqdn
+  host      = data.azurerm_postgresql_flexible_server.postgresql.fqdn
   database  =  local.resource_prefix
   username  = "psqladmin"
-  password  = azurerm_key_vault_secret.postgresql_admin_password.value
+  password  = data.azurerm_key_vault_secret.postgresql_admin_password.value
   sslmode   = "require"
 }
 
