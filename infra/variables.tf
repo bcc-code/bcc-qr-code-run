@@ -10,6 +10,6 @@ variable "github-token" {
 }
 
 variable "resource-prefix" {
-  type = "string"
+  type = string
   default = "qr-code-run-prod"
 }
