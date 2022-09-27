@@ -14,6 +14,15 @@ public class TeamsConfiguration : IEntityTypeConfiguration<Team>
     }
 }
 
+public class ScoreConfiguration : IEntityTypeConfiguration<Score>
+{
+    /// <inheritdoc />
+    public void Configure(EntityTypeBuilder<Score> builder)
+    {
+        builder.HasKey(x => new { x.TeamId, x.Id });
+    }
+}
+
 public class QrCodeConfiguration : IEntityTypeConfiguration<QrCode>
 {
     /// <inheritdoc />
