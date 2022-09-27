@@ -22,12 +22,18 @@ terraform {
   }
   experiments = [module_variable_optional_attrs]
 
-  backend "azurerm" {
-    resource_group_name  = "BCC-Platform"
-    storage_account_name = "bccplatformtfstate"
-    container_name       = "tfstate"
-    key                  = "qr-code-run.terraform.tfstate"
+#terraform cloud backend
+  backend "remote"{
+    organization = "BCC-ITS"
+    workspaces {name = "bcc-qr-code-run"}
   }
+
+  # backend "azurerm" {
+  #   resource_group_name  = "BCC-Platform"
+  #   storage_account_name = "bccplatformtfstate"
+  #   container_name       = "tfstate"
+  #   key                  = "qr-code-run.terraform.tfstate"
+  # }
 
 }
 
@@ -56,7 +62,7 @@ data "azurerm_client_config" "current" {}
 locals {
     location        = "norwayeast"
     resource_group  = "qr-code-run-${var.environment}"
-    resource_prefix = "qr-code-run-prod"
+    resource_prefix = "${var.resource-prefix}"
     platform_resource_prefix = "qr-code-run-${var.environment}"
     platform_resource_group  = "qr-code-run-${var.environment}"
     storage_account_name     = "${replace(local.platform_resource_prefix,"-","")}"

@@ -8,3 +8,8 @@ variable "github-token" {
   sensitive = true
   default = ""
 }
+
+variable "resource-prefix" {
+  type = "string"
+  default = "qr-code-run-prod"
+}
