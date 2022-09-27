@@ -16,7 +16,7 @@ const showRegister = ref(false);
         
         <div class="px-4 pt-10">
           
-            <img class="rounded-3xl object-cover object-center max-w-full p-5" src="HS22-Logo_Coloured.png" alt="" />
+            <img class="rounded-3xl object-cover object-center max-w-full p-5" src="../../public/HS22-Logo_Coloured.png" alt="" />
           
         </div>
       </div>
