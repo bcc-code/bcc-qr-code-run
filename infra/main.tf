@@ -724,7 +724,7 @@ module "api_route" {
   depends_on = [
     module.gateway,
     azurerm_resource_group.rg,
-    data.azapi_resource.rg
+    static_app.rg
   ]
 }
 
@@ -740,6 +740,6 @@ module "frontend_route" {
   depends_on = [
     module.gateway,
     azurerm_resource_group.rg,
-    data.azapi_resource.rg
+    static_app.rg
   ]
 }
