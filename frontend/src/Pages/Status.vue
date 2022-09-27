@@ -32,7 +32,7 @@ myChurch().then(x=> churchResult.value = x)
         <dt>Lag</dt>
         <dd>{{churchResult.teams }}</dd>
   
-        <dt>Poeng</dt>
+        <dt>Gjennomsnitt poeng</dt>
         <dd>{{churchResult.score}}</dd>
   
         <dt>Total Tid</dt>
