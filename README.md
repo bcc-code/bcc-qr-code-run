@@ -3,7 +3,7 @@
 ## Running Locally
 
 Run `docker-compose up --build`  
-Visit http://localhost:5125/swagger
+Visit http://localhost:5130/swagger
 
 ## Running frontend
 Run `yarn && yarn run dev` in frontend folder   
