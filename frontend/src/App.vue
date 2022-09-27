@@ -30,6 +30,6 @@ getLoggedInTeam()
 
 <style scoped>
   .img-background {
-    background-image: url('/hs22-bg.jpg');
+    background-image: url('/HS22-BG.jpg');
   }
 </style>
