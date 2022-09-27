@@ -50,10 +50,10 @@ provider "azuread" {
 
 provider "postgresql" {
   superuser = false
-  host      = data.azurerm_postgresql_flexible_server.postgresql_server.fqdn
+  host      = azurerm_postgresql_flexible_server.postgresql.fqdn
   database  =  local.resource_prefix
   username  = "psqladmin"
-  password  = data.azurerm_key_vault_secret.postgresql_admin_password.value
+  password  = azurerm_key_vault_secret.postgresql_admin_password.value
   sslmode   = "require"
 }
 
@@ -167,17 +167,11 @@ data "azurerm_key_vault" "keyvault" {
   resource_group_name = local.platform_resource_group
 }
 
-# Get Admin password for postgresql server
-data "azurerm_key_vault_secret" "postgresql_admin_password" {
-  name         = "postgreql-admin-password"
-  key_vault_id = data.azurerm_key_vault.keyvault.id
-}
-
-# Get Postgresql Server
-data "azurerm_postgresql_flexible_server" "postgresql_server" {
-  name                   = "${local.platform_resource_prefix}-postgresql"
-  resource_group_name    = local.platform_resource_group
-}
+# # Get Admin password for postgresql server
+# data "azurerm_key_vault_secret" "postgresql_admin_password" {
+#   name         = "postgreql-admin-password"
+#   key_vault_id = data.azurerm_key_vault.keyvault.id
+# }
 
 # Get platform resource group
 data "azurerm_resource_group" "platform_rg" {
@@ -728,7 +722,8 @@ module "api_route" {
   endpoint_domain_name  = "jordenrundt.bcc.no"
   resource_group_id     = azurerm_resource_group.rg.id
   depends_on = [
-    module.gateway
+    module.gateway,
+    azurerm_resource_group.rd
   ]
 }
 
@@ -742,6 +737,7 @@ module "frontend_route" {
   endpoint_domain_name  = "jordenrundt.bcc.no"
   resource_group_id     = azurerm_resource_group.rg.id
   depends_on = [
-    module.gateway
+    module.gateway,
+    azurerm_resource_group.rd
   ]
 }
