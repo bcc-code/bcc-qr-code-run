@@ -723,8 +723,7 @@ module "api_route" {
   resource_group_id     = azurerm_resource_group.rg.id
   depends_on = [
     module.gateway,
-    azurerm_resource_group.rg,
-    static_app.rg
+    azurerm_resource_group.rg
   ]
 }
 
@@ -739,7 +738,6 @@ module "frontend_route" {
   resource_group_id     = azurerm_resource_group.rg.id
   depends_on = [
     module.gateway,
-    azurerm_resource_group.rg,
-    static_app.rg
+    azurerm_resource_group.rg
   ]
 }
