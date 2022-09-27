@@ -11,7 +11,7 @@ getTrivia().then(x => results.value = x)
   <div v-if="results?.length">
     <div v-for="result in results" :key="result.title">
       <div class="text-2xl text-brown">{{result.title}}</div>
-      <div class="mt-3 text-xl text-brown">{{result.content}}</div>
+      <div class="mt-3 text-xl text-brown" v-html="result.content"></div>
     </div>
   </div>
   <div v-else class="font-bold text-2xl text-brown my-auto h-full flex">

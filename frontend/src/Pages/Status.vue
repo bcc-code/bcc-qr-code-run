@@ -10,8 +10,8 @@ myChurch().then(x=> churchResult.value = x)
 
 <template>
   <div>
-    <h3 class="mt-0 mb-2 font-bold text-2xl text-brown">{{store.team?.teamName}}</h3>
-    <dl class="text-xl text-brown grid grid-cols-[1fr_auto] gap-3" v-if="store.team">
+    <h3 class="border-t border-b border-interactive py-1 mb-1 mt-0 font-bold text-xl text-accent">{{store.team?.teamName}}</h3>
+    <dl class="text-l text-accent grid grid-cols-[1fr_auto] gap-3" v-if="store.team">
       <dt>Poeng</dt>
       <dd>{{store.team.score}}</dd>
 
@@ -21,14 +21,14 @@ myChurch().then(x=> churchResult.value = x)
       <dt>Tid</dt>
       <dd>{{store.team.timeSpent}}</dd>
 
-      <dt>Skjulte Skatter</dt>
+      <dt>Skjulte skatter</dt>
       <dd>{{store.team.secretsFound.length}}</dd>
     </dl>
 
     <template v-if="churchResult">
-      <h3 class="border-t border-interactive pt-5 mt-5 font-bold text-2xl text-brown">{{ churchResult.churchName }}</h3>
+      <h3 class="border-t border-b border-interactive py-1 mb-1 mt-5 font-bold text-xl text-accept2">{{ churchResult.churchName }}</h3>
   
-      <dl class="text-xl text-brown grid grid-cols-[1fr_auto] gap-3">
+      <dl class="text-l text-accept2 grid grid-cols-[1fr_auto] gap-3">
         <dt>Lag</dt>
         <dd>{{churchResult.teams }}</dd>
   
@@ -38,8 +38,11 @@ myChurch().then(x=> churchResult.value = x)
         <dt>Total Tid</dt>
         <dd>{{churchResult.timeSpent}}</dd>
   
-        <dt>Skjulte Skatter</dt>
+        <dt>Skjulte skatter</dt>
         <dd>{{churchResult.secretsFound}}</dd>
+
+        <dt>Oppslutning</dt>
+        <dd>30%</dd>
       </dl>
     </template>
   </div>

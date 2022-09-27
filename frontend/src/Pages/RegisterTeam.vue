@@ -9,7 +9,7 @@ getChurches().then(p => churches.value = p);
 
 const teamName = ref('');
 const churchName = ref('');
-const members = ref(0);
+const members = ref(1);
 
 async function join() {
   try {
@@ -33,8 +33,8 @@ async function join() {
       <div class="text-2xl font-bold text-brown text-center small-caps drop-shadow-md">
         Registrer lag
       </div>
-      <div class="text-brown text-xl drop-shadow-md">
-        Fyll inn lagnavn, menighet og antall deltakere 
+      <div class="text-brown text-l drop-shadow-md">
+        Fyll inn et unikt lagnavn, menighet og antall deltakere.
       </div>
       
       <form class="space-y-3">
@@ -52,7 +52,7 @@ async function join() {
         </div>
 
         <div class="space-y-2">
-          <label for="members" class="block text-sm font-medium text-white">Deltakere på laget (1-5)</label>
+          <label for="members" class="block text-sm font-medium text-brown">Deltakere på laget (1-5)</label>
           <input required v-model="members" type="number" min="1" max="5" name="members" id="members" class="block rounded-md w-full border-0 px-3 py-2 shadow-sm focus-within:shadow-lg transition-shadow focus:ring-2 focus:ring-accent focus:ring-2" />
         </div>
       </form>
