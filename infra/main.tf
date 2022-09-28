@@ -161,22 +161,6 @@ data "azurerm_container_registry" "acr" {
   resource_group_name = "BCC-Platform"
 }
 
-# Get Key Vault for postgresql server
-data "azurerm_key_vault" "keyvault" {
-  name                = lower(replace("${local.platform_resource_prefix}-psql","-",""))
-  resource_group_name = local.platform_resource_group
-}
-
-# # Get Admin password for postgresql server
-# data "azurerm_key_vault_secret" "postgresql_admin_password" {
-#   name         = "postgreql-admin-password"
-#   key_vault_id = data.azurerm_key_vault.keyvault.id
-# }
-
-# Get platform resource group
-data "azurerm_resource_group" "platform_rg" {
-  name = local.platform_resource_group
-}
 
 # Create Database
 # NB! This will only work if server has a public IP and the client execuring terrafrom has been whitelisted in the server's firewall
@@ -194,7 +178,7 @@ module "postgresql_db" {
 resource "azurerm_key_vault_secret" "postgreql_user_password" {
   name         = "${local.resource_prefix}-db-user-password"
   value        = module.postgresql_db.db_user_password
-  key_vault_id = data.azurerm_key_vault.keyvault.id
+  key_vault_id = azurerm_key_vault.postgresql_vault.id
 }
 
 
@@ -721,6 +705,7 @@ module "api_route" {
   endpoint_name         = "default"
   endpoint_domain_name  = "jordenrundt.bcc.no"
   resource_group_id     = azurerm_resource_group.rg.id
+  resource_group_name   = azurerm_resource_group.rg.name
   depends_on = [
     module.gateway,
     azurerm_resource_group.rg
@@ -736,6 +721,7 @@ module "frontend_route" {
   endpoint_name         = "default"
   endpoint_domain_name  = "jordenrundt.bcc.no"
   resource_group_id     = azurerm_resource_group.rg.id
+  resource_group_name   = azurerm_resource_group.rg.name
   depends_on = [
     module.gateway,
     azurerm_resource_group.rg

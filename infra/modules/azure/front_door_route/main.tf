@@ -22,10 +22,6 @@ locals {
   origin_path = var.origin_path == null ? "/" : var.origin_path
 }
 
-data "azapi_resource" "rg" {
-  resource_id = var.resource_group_id
-  type = "Microsoft.Resources/resourceGroups@2021-04-01"
-}
 
 data "azapi_resource" "frontdoor_profile" {
   name      = var.front_door_name
@@ -50,7 +46,7 @@ data "azurerm_client_config" "current" {}
 resource "azapi_resource" "origin_group" {
 
   name      = "${var.name}-origin-group"
-  parent_id = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${data.azapi_resource.rg.name}/providers/Microsoft.Cdn/profiles/${var.front_door_name}" 
+  parent_id = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Cdn/profiles/${var.front_door_name}" 
   #data.azapi_resource.frontdoor_profile.id
   type      = "Microsoft.Cdn/profiles/origingroups@2021-06-01"
 
@@ -149,7 +145,7 @@ resource "random_id" "id" {
 
 resource "azurerm_resource_group_template_deployment" "origin_route" {
   name                = "${var.name}_deployment_${random_id.id.hex}"
-  resource_group_name = "${data.azapi_resource.rg.name}"
+  resource_group_name = "${var.resource_group_name}"
   deployment_mode     = "Incremental"
   parameters_content = jsonencode({
     "frontdoor_name" = {

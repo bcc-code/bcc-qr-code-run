@@ -3,6 +3,12 @@ variable "resource_group_id" {
   type        = string
 }
 
+variable "resource_group_name" {
+  description = "(Required) The resource name of the resource group in which to create the resource. Should corrospond with provided resource group ID."
+  type        = string
+}
+
+
 variable "name" {
   description = "(Required) Friendly name of azure frontdoor origin group and route."
   type        = string
