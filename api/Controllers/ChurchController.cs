@@ -23,6 +23,6 @@ public class ChurchController : ControllerBase
     public async Task<string[]> GetChurches()
     {
         
-        return await _cache.GetOrCreateAsync("churches", TimeSpan.FromMinutes(5), () => _context.Churches.Select(x=>x.Name).ToArrayAsync()) ?? new string[0];
+        return await _cache.GetOrCreateAsync("churches", TimeSpan.FromMinutes(5), () => _context.Churches.Select(x=>x.Name).OrderBy(x=>x).ToArrayAsync()) ?? Array.Empty<string>();
     }
 }
