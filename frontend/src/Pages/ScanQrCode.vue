@@ -58,7 +58,7 @@ async function onDecode(decodedString: string) {
       <div class="text-brown text-2xl mt-5">{{scannedQrCode.points}} poeng</div>
       
       <div class="mt-10 text-2xl text-brown">{{scannedQrCode.funFact.title}}</div>
-      <div class="mt-3 text-xl text-brown">{{scannedQrCode.funFact.content}}</div>
+      <div class="mt-3 text-xl text-brown" v-html="scannedQrCode.funFact.content"></div>
     </div>
   </div>
 </template>
