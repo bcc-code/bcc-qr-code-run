@@ -6,8 +6,15 @@ public static class QrCodeParser
 {
     public static QrCodeData? Parse(QrCodeScanned request)
     {
-        var jsonData = Convert.FromBase64String(request.Data);
-        return JsonSerializer.Deserialize<QrCodeData>(jsonData);
+        try
+        {
+            var jsonData = Convert.FromBase64String(request.Data);
+            return JsonSerializer.Deserialize<QrCodeData>(jsonData);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 }
 

@@ -8,10 +8,11 @@ import {store} from "../api/teamApi";
 const emits = defineEmits(["close"])
 const scannedQrCode = ref<QrCodeResult|undefined>()
 const processing = ref(false);
+const errorMessage = ref('')
 
 
 
-function isQrCode(result: number | QrCodeResult): result is QrCodeResult {
+function isQrCode(result: string | QrCodeResult): result is QrCodeResult {
   return (result as QrCodeResult).funFact !== undefined;
 }
 
@@ -27,7 +28,7 @@ async function onDecode(decodedString: string) {
     store.team = result.team;
   }
   else {
-    console.log("Result is: " + result)
+    errorMessage.value = result
   }
 }
 
@@ -45,9 +46,13 @@ async function onDecode(decodedString: string) {
       </div>
     </div>
     
-<!--    <button @click="onDecode('eyJRckNvZGVJZCI6MX0=')">scan</button>-->
+  <!-- <button @click="onDecode('eyJRc3kNvZGVJZCI6MX0=')">scan</button> -->
     
-    <qrcode-stream @decode="onDecode" v-if="!scannedQrCode"/>
+    <div class="px-10 py-5" v-if="errorMessage">
+      <div class="text-3xl text-accent font-bold">{{ errorMessage }}</div>
+    </div>
+    <qrcode-stream @decode="onDecode" v-else-if="!scannedQrCode"/>
+    
     <div v-else class="px-10 py-5">
       <div class="text-4xl text-brown font-bold">Gratulerer!</div>
       <div class="text-brown text-2xl mt-5">{{scannedQrCode.points}} poeng</div>

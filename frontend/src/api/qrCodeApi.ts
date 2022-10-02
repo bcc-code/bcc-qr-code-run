@@ -1,7 +1,7 @@
 ﻿import baseUrl from "./baseApi";
 import {Team} from "./teamApi";
 
-export async function scanCode(data:string): Promise<QrCodeResult|number> {
+export async function scanCode(data:string): Promise<QrCodeResult|string> {
     const result = await fetch(`${baseUrl}/scan`, {
         method: "POST",
         headers: {
@@ -18,7 +18,7 @@ export async function scanCode(data:string): Promise<QrCodeResult|number> {
         return (await result.json()) as QrCodeResult
     }
         
-    else return result.status
+    else return await result.json() as string
 }
 
 export interface QrCodeResult {

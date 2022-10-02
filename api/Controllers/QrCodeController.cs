@@ -39,7 +39,7 @@ public class QrCodeController : ControllerBase
 
         var qrCodeData = QrCodeParser.Parse(request);
         _logger.LogInformation("Team {Team} scanned QR Code {Request}", User.Identity.Name!,
-            qrCodeData?.QrCodeId.ToString() ?? "PARSE ERROR");
+            qrCodeData?.QrCodeId.ToString() ?? $"PARSE ERROR: {request.Data}");
 
         if (qrCodeData == null)
             return BadRequest("Ukjent QR-kode!");
