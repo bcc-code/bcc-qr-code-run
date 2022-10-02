@@ -42,12 +42,12 @@ public class QrCodeController : ControllerBase
             qrCodeData?.QrCodeId.ToString() ?? "PARSE ERROR");
 
         if (qrCodeData == null)
-            return BadRequest();
+            return BadRequest("Ukjent QR-kode!");
 
         var qrCode = await _cache.GetOrCreateAsync(qrCodeData.QrCodeId.ToString(), TimeSpan.FromMinutes(10),
             () => { return _context.QrCodes.FirstOrDefaultAsync(x => x.QrCodeId == qrCodeData.QrCodeId); });
         if (qrCode == null)
-            return BadRequest();
+            return BadRequest("Ukjent QR-kode!");
 
         _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
 
@@ -57,7 +57,7 @@ public class QrCodeController : ControllerBase
             return Unauthorized();
 
         if (!await team.AddQrCodeAsync(qrCode))
-            return BadRequest();
+            return BadRequest("Du har allerede scannet denne QR-koden!");
 
         return new QrCodeResult()
         {
