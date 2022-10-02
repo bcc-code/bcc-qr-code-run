@@ -53,3 +53,12 @@ public class ChurchConfiguration : IEntityTypeConfiguration<Church>
         builder.HasKey(x => x.Name);
     }
 }
+
+public class CacheEntryConfiguration : IEntityTypeConfiguration<CacheEntry>
+{
+    /// <inheritdoc />
+    public void Configure(EntityTypeBuilder<CacheEntry> builder)
+    {
+        builder.HasKey(x => x.Key);
+    }
+}
