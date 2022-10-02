@@ -82,7 +82,13 @@ public class TeamEndpoint : ControllerBase
     public async Task<IActionResult> Logout()
     {
         _logger.LogInformation("Team {TeamName} logged in", User.FindFirst(ClaimTypes.Name)?.Value);
-
+        var team = await _context.Teams.FirstOrDefaultAsync(x => x.Id == int.Parse(User.Identity.Name!));
+        if (team != null)
+        {
+            _context.Remove(team);
+            await _context.SaveChangesAsync();
+        }
+        
         await HttpContext.SignOutAsync();
         return NoContent();
     }
