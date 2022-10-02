@@ -36,16 +36,7 @@ public class TeamEndpoint : ControllerBase
         
         if (team == null)
         {
-            var team1 = new Team(_context)
-            {
-                Members = registerTeamEvent.Members,
-                TeamName = registerTeamEvent.TeamName,
-                ChurchName = registerTeamEvent.ChurchName,
-            };
-
-            _context.Teams.Add(team1);
-            await _context.SaveChangesAsync();
-            team = team1;
+            return BadRequest("Det finnes allerede et lag med dette navnet.");
         }
 
         var claimsIdentity = new ClaimsIdentity(new[]
