@@ -51,7 +51,7 @@ namespace api.Services
                 {
                     Points = team.QrCodesScanned.Sum(q => q.Points),
                     Posts = team.QrCodesScanned.Count(q => !q.IsSecret),
-                    Secrets = team.QrCodesScanned.Count(q => q.IsSecret),
+                    SecretsFound = team.QrCodesScanned.Count(q => q.IsSecret),
                     TeamName = team.TeamName,
                     TimeSpent = team.TimeSpent.GetValueOrDefault(),
                     Members = team.Members
@@ -74,6 +74,7 @@ namespace api.Services
                     var totalTimeSpent = activeTeams.Any() ? activeTeams.Select(t => t.TimeSpent).Aggregate((c, n) => c.Add(n)) : TimeSpan.Zero;
                     var participation = Math.Min((int)Math.Round((church.Participants > 0 ? ((decimal)activeParticipants / church.Participants) : 1) * 100), 100);
                     var totalPoints = activeTeams.Sum(t => t.Points);
+                    var secretsFound = activeTeams.Sum(t => t.SecretsFound);
                     var teamsCount = activeTeams.Count();
                     var averagePoints = teamsCount > 0 ? Math.Round(((decimal)totalPoints / (decimal)teamsCount), 2) : 0;
                     return new ChurchResult
@@ -85,6 +86,7 @@ namespace api.Services
                         Teams = teamsCount,
                         Registrations = church.Participants,
                         Points = totalPoints,
+                        SecretsFound = secretsFound,
                         AveragePoints = averagePoints,
                         Score = participation * averagePoints,
                         TimeSpent = totalTimeSpent.ToString("hh\\:mm", CultureInfo.InvariantCulture)
@@ -180,7 +182,7 @@ namespace api.Services
 
         public int Posts { get; set; }
 
-        public int Secrets { get; set; }
+        public int SecretsFound { get; set; }
 
         public TimeSpan TimeSpent { get; set; }
 
@@ -192,7 +194,7 @@ namespace api.Services
         {
             Points = 0,
             Posts = 0,
-            Secrets = 0,
+            SecretsFound = 0,
             TeamName = "",
             TimeSpent = TimeSpan.Zero
 
@@ -221,6 +223,8 @@ namespace api.Services
         public decimal Score { get; set; }
 
         public decimal AveragePoints { get; set; }
+
+        public int SecretsFound { get; set; }
 
         public static ChurchResult Empty => new ChurchResult
         {
