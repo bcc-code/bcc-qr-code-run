@@ -113,12 +113,11 @@ namespace api.Services
         public async Task<List<ChurchResult?>> GetResultsAsync()
         {
             var churchNames = await GetChurchNamesAsync() ?? new List<string>();
-            var tasks = new List<Task<ChurchResult?>>();
+            var results = new List<ChurchResult?>();
             foreach (var church in churchNames)
             {
-                tasks.Add(GetResultForChurchAsync(church));
+                results.Add(await GetResultForChurchAsync(church));
             }
-            var results = await Task.WhenAll(tasks);
             return results.OrderByDescending(r => r.Score).ToList();
         }
 
