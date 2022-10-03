@@ -25,6 +25,7 @@ public class Team
 
     [JsonIgnore]
     public List<Score> QrCodesScanned { get; set; } = new();
+
     [NotMapped]
     public IEnumerable<Score> Posts => QrCodesScanned.Where(x=>x.IsSecret == false);
     

@@ -51,9 +51,14 @@ export async function getLoggedInTeam() {
     const result = await fetch(`${baseUrl}/team/`, {
         credentials: "include",
     });
-    store.team = await result.json();
-    store.isLoggedIn = store.team !== null;
-    return store.team;
+    if (result.ok) {
+        store.team = await result.json();
+        store.isLoggedIn = store.team !== null;
+        return store.team;
+    } else {
+        store.team = null;
+        store.isLoggedIn = false;
+    }
 }
 
 export async function logout() {

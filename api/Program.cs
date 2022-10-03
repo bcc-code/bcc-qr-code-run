@@ -2,8 +2,10 @@ using api.Data;
 using api.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,6 +67,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
 
 builder.Services.AddSingleton<CacheService>();
+builder.Services.AddScoped<ResultsService>();
 
 var app = builder.Build();
 
@@ -78,6 +81,19 @@ else
 {
 //    app.UseHttpsRedirection();
 }
+
+var supportedCultures = new[]
+{
+ new CultureInfo("nb-NO")
+};
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("nb-NO"),
+    // Formatting numbers, dates, etc.
+    SupportedCultures = supportedCultures,
+    // UI strings that we have localized.
+    SupportedUICultures = supportedCultures
+});
 
 
 app.UseCors(policy =>
