@@ -45,7 +45,7 @@ export async function login(teamName: string, churchName: string, members: numbe
         }
         else
         {
-            store.errorMessage = await result.text();
+            store.errorMessage = await result.json();
             return null
         }
     } catch (e) {
@@ -74,7 +74,7 @@ export async function getLoggedInTeam() {
 
 export async function logout() {
     try {
-        if(!confirm("Start på nytt?")){
+        if(!confirm("Start på nytt?\nDu vil miste alle poengene dine.")){
             return;
         }
         const result = await fetch(`${baseUrl}/team/logout`, {
