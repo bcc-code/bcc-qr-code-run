@@ -1,5 +1,5 @@
 ﻿<script setup lang="ts">
-import {login} from "../api/teamApi";
+import {login, store} from "../api/teamApi";
 import {getChurches} from "../api/churchApi";
 import {ref} from "vue";
 
@@ -56,6 +56,10 @@ async function join() {
           <input required v-model="members" type="number" min="1" max="5" name="members" id="members" class="block rounded-md w-full border-0 px-3 py-2 shadow-sm focus-within:shadow-lg transition-shadow focus:ring-2 focus:ring-accent focus:ring-2" />
         </div>
       </form>
+
+      <div class="px-10 py-5" v-if="store.errorMessage">
+        <div class="text-3xl text-accent font-bold">{{ store.errorMessage }}</div>
+      </div>
       
     </div> 
     

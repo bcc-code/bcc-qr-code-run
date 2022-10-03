@@ -14,9 +14,13 @@ export interface Team {
 export const store = reactive({
     team: null as Team|null,
     isLoggedIn: false,
+    errorMessage: "",
+    loggingIn: false
 })
 
 export async function login(teamName: string, churchName: string, members: number) {
+    if (store.loggingIn) return;
+    store.loggingIn = true;
     try {
         const result = await fetch(`${baseUrl}/team/register`, {
             method: 'POST',
@@ -36,14 +40,20 @@ export async function login(teamName: string, churchName: string, members: numbe
         if(result.ok) {
             store.team = (await result.json()) as Team;
             store.isLoggedIn = store.team !== null;
+            store.errorMessage = "";
             return store.team;
         }
         else
         {
+            store.errorMessage = await result.text();
             return null
         }
     } catch (e) {
         
+    }
+    finally
+    {
+        store.loggingIn = false;
     }
 }
 
@@ -54,6 +64,7 @@ export async function getLoggedInTeam() {
     if (result.ok) {
         store.team = await result.json();
         store.isLoggedIn = store.team !== null;
+        store.errorMessage = "";
         return store.team;
     } else {
         store.team = null;
