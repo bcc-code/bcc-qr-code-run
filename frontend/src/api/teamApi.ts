@@ -74,6 +74,9 @@ export async function getLoggedInTeam() {
 
 export async function logout() {
     try {
+        if(!confirm("Start på nytt?\nDu vil miste alle poengene dine.")){
+            return;
+        }
         const result = await fetch(`${baseUrl}/team/logout`, {
             method: 'POST',
             headers: {

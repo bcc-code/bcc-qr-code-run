@@ -8,7 +8,9 @@ import Map from "./Map.vue";
 import {ref} from "vue";
 import ScanQrCode from "./ScanQrCode.vue";
 
-import { TrophyIcon, MapIcon, QrCodeIcon, SparklesIcon, StarIcon, UserGroupIcon, GlobeEuropeAfricaIcon } from '@heroicons/vue/24/solid'
+import { TrophyIcon, MapIcon, QrCodeIcon, SparklesIcon, StarIcon, UserGroupIcon, GlobeEuropeAfricaIcon, ArrowLeftOnRectangleIcon} from '@heroicons/vue/24/solid'
+
+import {logout} from "../api/teamApi";
 
 const selectedTab = ref(1);
 
@@ -18,12 +20,20 @@ function setTab (tab: number) {
   selectedTab.value
 }
 
+
+
 </script>
 
 <template>
-  <div class="flex flex-col h-screen">
+  <div class="flex flex-col h-screen relative">
+    
+    
+
     <div class="text-4xl font-bold text-accept2 text-center py-5 px-4 drop-shadow">
       <h1 class="text-accept2">Jorden Rundt </h1>
+    </div>
+    <div class="absolute h-7 w-7 text-right right-14 top-7 text-accept2" @click="logout">
+      <ArrowLeftOnRectangleIcon />
     </div>
     
     <template v-if="showQrScan">
