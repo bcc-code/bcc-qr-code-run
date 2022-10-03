@@ -45,7 +45,7 @@ export async function login(teamName: string, churchName: string, members: numbe
         }
         else
         {
-            store.errorMessage = await result.text();
+            store.errorMessage = await result.json();
             return null
         }
     } catch (e) {
