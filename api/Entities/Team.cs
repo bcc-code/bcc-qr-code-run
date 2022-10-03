@@ -24,6 +24,7 @@ public class Team
     public int Members { get; init; }
 
     [JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
     public List<Score> QrCodesScanned { get; set; } = new();
 
     [NotMapped]
@@ -64,6 +65,7 @@ public record Score(int Id, int Points, bool IsSecret)
 {
     public int TeamId { get; set; }
     [JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
     public Team Team { get; set; }
 };
 

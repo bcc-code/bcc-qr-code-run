@@ -21,5 +21,6 @@ public class QrCode
 public record FunFact(string Title, string Content)
 {
     [JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
     public int FunFactId { get; set; }
 }

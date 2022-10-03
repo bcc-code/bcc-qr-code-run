@@ -87,7 +87,7 @@ namespace api.Services
                         Points = totalPoints,
                         AveragePoints = averagePoints,
                         Score = participation * averagePoints,
-                        TimeSpent = totalTimeSpent.ToString("hh:mm", CultureInfo.InvariantCulture)
+                        TimeSpent = totalTimeSpent.ToString("hh\\:mm", CultureInfo.InvariantCulture)
                     };
                 }
 
