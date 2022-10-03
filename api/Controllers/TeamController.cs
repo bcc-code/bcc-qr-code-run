@@ -28,12 +28,12 @@ public class TeamEndpoint : ControllerBase
         
         if (registerTeamEvent.Members <= 0 || registerTeamEvent.Members > 5)
         {
-            return BadRequest("Antall på laget må være mellom 1 og 5.");
+            return BadRequest("Antall deltakere må være mellom 1 og 5.");
         }
 
         if (string.IsNullOrEmpty(registerTeamEvent.ChurchName))
         {
-            return BadRequest("Velg en menighet fra listen.");
+            return BadRequest("Velg menighet fra listen.");
         }
 
          if (string.IsNullOrEmpty(registerTeamEvent.TeamName))
@@ -41,13 +41,27 @@ public class TeamEndpoint : ControllerBase
             return BadRequest("Lagnavn kan ikke være blank.");
         }
 
-        var team = await _context.Teams.FirstOrDefaultAsync(x =>
+            var team = await _context.Teams.FirstOrDefaultAsync(x =>
             x.TeamName == registerTeamEvent.TeamName && x.ChurchName == registerTeamEvent.ChurchName);
         
         if (team != null)
         {
             return BadRequest("Det finnes allerede et lag med dette navnet.");
         }
+
+
+
+        var team1 = new Team(_context)
+        {
+            Members = registerTeamEvent.Members,
+            TeamName = registerTeamEvent.TeamName,
+            ChurchName = registerTeamEvent.ChurchName,
+        };
+
+        _context.Teams.Add(team1);
+        await _context.SaveChangesAsync();
+        team = team1;
+
 
         var claimsIdentity = new ClaimsIdentity(new[]
         {

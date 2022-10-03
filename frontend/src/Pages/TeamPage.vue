@@ -8,7 +8,7 @@ import Map from "./Map.vue";
 import {ref} from "vue";
 import ScanQrCode from "./ScanQrCode.vue";
 
-import { TrophyIcon, MapIcon, QrCodeIcon, SparklesIcon, StarIcon } from '@heroicons/vue/24/solid'
+import { TrophyIcon, MapIcon, QrCodeIcon, SparklesIcon, StarIcon, UserGroupIcon, GlobeEuropeAfricaIcon } from '@heroicons/vue/24/solid'
 
 const selectedTab = ref(1);
 
@@ -33,9 +33,9 @@ function setTab (tab: number) {
 
       <div class="px-10 py-3">
         <div class="grid grid-cols-4 gap-4">
-          <div @click="selectedTab = 1"><QrCodeIcon  :class="`h-12 w-12 ${selectedTab == 1 ? 'text-accent' : 'text-accept2'}`"/></div>
+          <div @click="selectedTab = 1"><UserGroupIcon  :class="`h-12 w-12 ${selectedTab == 1 ? 'text-accent' : 'text-accept2'}`"/></div>
           <div @click="selectedTab = 3"><MapIcon :class="`h-12 w-12 ${selectedTab == 3 ? 'text-accent' : 'text-accept2'}`"/></div> 
-          <div @click="selectedTab = 4"><StarIcon :class="`h-12 w-12 ${selectedTab == 4 ? 'text-accent' : 'text-accept2'}`"/></div>            
+          <div @click="selectedTab = 4"><GlobeEuropeAfricaIcon :class="`h-12 w-12 ${selectedTab == 4 ? 'text-accent' : 'text-accept2'}`"/></div>            
           <div @click="selectedTab = 2"><TrophyIcon :class="`h-12 w-12 ${selectedTab == 2 ? 'text-accent' : 'text-accept2'}`"/></div>             
         </div>
         
