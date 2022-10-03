@@ -11,7 +11,7 @@ namespace api.Services
         private readonly DataContext _context;
         private readonly CacheService _cache;
 
-        private TimeSpan LOCALTTL = TimeSpan.FromMinutes(15);
+        private TimeSpan LOCALTTL = TimeSpan.FromSeconds(15);
         private TimeSpan DISTRIBUTEDTTL = TimeSpan.FromMinutes(5);
 
         public ResultsService(DataContext db, CacheService cache)
