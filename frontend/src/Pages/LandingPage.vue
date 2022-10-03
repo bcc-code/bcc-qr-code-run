@@ -25,7 +25,7 @@ const showResults = ref(false);
       
       <div class="mx-auto space-y-6 py-6 px-4">
         <h2 class="text-3xl font-bold tracking-tight text-accept2 text-center" id="join-heading"><span class="text-accent">QR-løp:</span> Jorden rundt</h2>
-        <p class="text-lg text-brown">Ta med noen av vennene dine og bli med <b></b>lørdag 8. oktober</b>, på en reise <span class="text-accent">jorden rundt</span>!</p>
+        <p class="text-lg text-brown">Ta med noen av vennene dine og bli med <b>lørdag 8. oktober</b>, på en reise <span class="text-accent">jorden rundt</span>!</p>
         <p> Blir det <i>din</i> menighet som har <b>best oppslutning</b>?</p>
         <a class="block w-full rounded-md bg-interactive text-xl py-3 px-5 text-center text-base font-medium text-brown shadow-md active:bg-interactive_active active:text-white" @click="showRegister = true">Kom i gang!</a>
         <div v-if="showResults">
