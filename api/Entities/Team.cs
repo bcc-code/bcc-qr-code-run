@@ -28,10 +28,12 @@ public class Team
     public List<Score> QrCodesScanned { get; set; } = new();
 
     [NotMapped]
-    public IEnumerable<Score> Posts => QrCodesScanned.Where(x=>x.IsSecret == false);
+    [Newtonsoft.Json.JsonIgnore]
+    public IEnumerable<Score> Posts => QrCodesScanned.Where(x=>x.IsSecret == false).ToList();
     
     [NotMapped]
-    public IEnumerable<Score> SecretsFound => QrCodesScanned.Where(x => x.IsSecret);
+    [Newtonsoft.Json.JsonIgnore]
+    public IEnumerable<Score> SecretsFound => QrCodesScanned.Where(x => x.IsSecret).ToList();
     
 
     public int Score => QrCodesScanned.Sum(x => x.Points);
