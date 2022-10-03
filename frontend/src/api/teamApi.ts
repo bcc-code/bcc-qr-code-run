@@ -63,6 +63,9 @@ export async function getLoggedInTeam() {
 
 export async function logout() {
     try {
+        if(!confirm("Start på nytt?")){
+            return;
+        }
         const result = await fetch(`${baseUrl}/team/logout`, {
             method: 'POST',
             headers: {
