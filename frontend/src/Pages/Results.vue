@@ -1,9 +1,9 @@
 ﻿<script setup lang="ts">
 
-import {getResults, Result} from "../api/resultsApi";
+import {getResults, ChurchResult} from "../api/resultsApi";
 import {ref} from "vue";
 
-const results = ref<Result[]>([])
+const results = ref<ChurchResult[]>([])
 getResults().then(x => results.value = x)
 
 </script>
@@ -20,14 +20,12 @@ getResults().then(x => results.value = x)
         </tr>
       </thead>
       <tbody>
-      <template v-for="result in results" :key="result.church">
-        <tr >
-          <td class="pt-1">{{result.church}}</td>
-          <td class="text-center">{{result.points}}</td>
-          <td class="text-center">30%</td>
-          <td class="text-center"><b>{{result.points*Math.min(0.3,1)*100}}</b></td>
+        <tr v-for="result in results" :key="result.church">
+          <td class="pt-1">{{result.church}}, {{result.country}}</td>
+          <td class="text-center">{{result.averagePoints}}</td>
+          <td class="text-center">{{result.participation}}%</td>
+          <td class="text-center"><b>{{result.score}}</b></td>
         </tr>
-      </template>
       </tbody>
     </table>
     <dl class=" grid grid-cols-[1fr_auto]">

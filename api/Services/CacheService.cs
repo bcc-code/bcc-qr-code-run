@@ -22,7 +22,32 @@ namespace api.Services
 
         private static readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
-        public async Task<TItem?> GetOrCreateAsync<TItem>(string key, TimeSpan ttl, Func<Task<TItem>> factory)
+
+        public async Task ClearAsync(string key)
+        {
+            var attempts = 0;
+            retry:
+            try
+            {
+                attempts++;
+                _memoryCache.Remove(key);
+                await _distributedCache.RemoveAsync(key);
+            }
+            catch
+            {
+                if (attempts < 3)
+                {
+                    goto retry;
+                }
+            }
+        }
+
+        public Task<TItem?> GetOrCreateAsync<TItem>(string key, TimeSpan ttl, Func<Task<TItem>> factory)
+        {
+            return GetOrCreateAsync(key, ttl, ttl, factory);
+        }
+
+        public async Task<TItem?> GetOrCreateAsync<TItem>(string key, TimeSpan ttlLocal, TimeSpan ttlDistributed, Func<Task<TItem>> factory)
         {
             // Attempt to retrieve from memory
             var itm = _memoryCache.Get<TItem>(key);
@@ -63,7 +88,7 @@ namespace api.Services
                                 {
                                     // Attempt to write to distributed cache
                                     var timeoutToken = new CancellationTokenSource(5000).Token;
-                                    await _distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(item), new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = ttl }, timeoutToken);
+                                    await _distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(item), new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = ttlDistributed }, timeoutToken);
                                 }
                                 catch (Exception ex)
                                 {
@@ -78,7 +103,7 @@ namespace api.Services
                     }
                     if (item != null)
                     {
-                        c.AbsoluteExpirationRelativeToNow = ttl;
+                        c.AbsoluteExpirationRelativeToNow = ttlLocal;
                         return item;
                     }
                     else

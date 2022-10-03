@@ -2,7 +2,7 @@
 
 export async function getResults() {
     const result = await fetch(`${baseUrl}/results`);
-    return await result.json() as Result[];
+    return await result.json() as ChurchResult[];
 }
 
 export async function myChurch() {
@@ -12,15 +12,17 @@ export async function myChurch() {
     return await result.json() as ChurchResult;
 }
 
-export interface Result {
-    church: string,
-    points: number
-} 
-
 export interface ChurchResult {
-    churchName: string,
+    church: string,
+    country: string,
     teams: number,
+    timeSpent: string,
+    registrations: number,
+    participants: number,
+    participation: number,
+    points: number,
+    averagePoints: number,
     score: number,
     secretsFound: number,
-    timeSpent: string
+    
 }

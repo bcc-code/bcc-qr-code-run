@@ -26,14 +26,14 @@ myChurch().then(x=> churchResult.value = x)
     </dl>
 
     <template v-if="churchResult">
-      <h3 class="border-t border-b border-interactive py-1 mb-1 mt-5 font-bold text-xl text-accept2">{{ churchResult.churchName }}</h3>
+      <h3 class="border-t border-b border-interactive py-1 mb-1 mt-5 font-bold text-xl text-accept2">{{ churchResult.church }}</h3>
   
       <dl class="text-l text-accept2 grid grid-cols-[1fr_auto] gap-3">
         <dt>Lag</dt>
         <dd>{{churchResult.teams }}</dd>
   
         <dt>Gjennomsnitt poeng</dt>
-        <dd>{{churchResult.score}}</dd>
+        <dd>{{churchResult.averagePoints}}</dd>
   
         <dt>Total Tid</dt>
         <dd>{{churchResult.timeSpent}}</dd>
@@ -42,7 +42,7 @@ myChurch().then(x=> churchResult.value = x)
         <dd>{{churchResult.secretsFound}}</dd>
 
         <dt>Oppslutning</dt>
-        <dd>30%</dd>
+        <dd>{{churchResult.participation}}%</dd>
       </dl>
     </template>
   </div>

@@ -16,12 +16,14 @@ public class QrCodeController : ControllerBase
     private readonly ILogger<QrCodeController> _logger;
     private readonly DataContext _context;
     private readonly CacheService _cache;
+    private readonly ResultsService _results;
 
-    public QrCodeController(ILogger<QrCodeController> logger, DataContext dataContext, CacheService cache)
+    public QrCodeController(ILogger<QrCodeController> logger, DataContext dataContext, CacheService cache, ResultsService results)
     {
         _logger = logger;
         _context = dataContext;
         _cache = cache;
+        _results = results;
     }
 
     /// <summary>
@@ -59,6 +61,8 @@ public class QrCodeController : ControllerBase
         if (!await team.AddQrCodeAsync(qrCode))
             return BadRequest("Du har allerede scannet denne QR-koden!");
 
+        await _results.UpdateResultsFor(team.TeamName, team.ChurchName);
+
         return new QrCodeResult()
         {
             Points = qrCode.Points,
@@ -66,6 +70,7 @@ public class QrCodeController : ControllerBase
             FunFact = qrCode.FunFact,
         };
     }
+
 }
 
 public class QrCodeResult
