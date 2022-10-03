@@ -42,7 +42,7 @@ myChurch().then(x=> churchResult.value = x)
         <dd>{{churchResult.secretsFound}}</dd>
 
         <dt>Oppslutning</dt>
-        <dd>{{churchResult.participation}}%</dd>
+        <dd>{{churchResult.participants}} ({{churchResult.participation}}%)</dd>
       </dl>
     </template>
   </div>
