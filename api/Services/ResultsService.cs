@@ -87,7 +87,7 @@ namespace api.Services
                         Points = totalPoints,
                         AveragePoints = averagePoints,
                         Score = participation * averagePoints,
-                        TimeSpent = totalTimeSpent
+                        TimeSpent = totalTimeSpent.ToString("00:00")
                     };
                 }
 
@@ -209,7 +209,7 @@ namespace api.Services
 
         public int Teams { get; set; }
 
-        public TimeSpan TimeSpent { get; set; }
+        public string TimeSpent { get; set; } = "00:00";
 
         public int Registrations { get; set; }
 
