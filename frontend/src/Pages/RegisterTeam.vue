@@ -39,7 +39,7 @@ async function join() {
       
       <form class="space-y-3">
         <div class="space-y-2">
-          <label for="name" class="block text-sm font-medium text-brown">Lagnavn</label>
+          <label for="name" class="block text-sm font-medium text-brown">Unikt lagnavn</label>
           <input required v-model="teamName" type="text" name="name" id="name" class="block rounded-md w-full border-0 px-3 py-2 shadow-sm focus-within:shadow-lg transition-shadow focus:ring-2 focus:ring-accent focus:ring-2" />
         </div>
 
