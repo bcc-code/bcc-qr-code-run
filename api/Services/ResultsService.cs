@@ -102,7 +102,7 @@ namespace api.Services
             try
             {
                 var region = new RegionInfo(countryCode);
-                return region.DisplayName;
+                return region.EnglishName;
             }
             catch
             {

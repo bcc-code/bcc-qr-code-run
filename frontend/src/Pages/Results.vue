@@ -21,7 +21,7 @@ getResults().then(x => results.value = x)
       </thead>
       <tbody>
         <tr v-for="result in results" :key="result.church">
-          <td class="pt-1">{{result.church}}, {{result.country}}</td>
+          <td class="pt-1">{{result.church}}<br><small>{{result.country}}</small></td>
           <td class="text-center">{{result.averagePoints}}</td>
           <td class="text-center">{{result.participation}}%</td>
           <td class="text-center"><b>{{result.score}}</b></td>
