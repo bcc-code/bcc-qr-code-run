@@ -26,15 +26,25 @@ public class TeamEndpoint : ControllerBase
     {
         _logger.LogInformation("Team {TeamName} logged in", registerTeamEvent.TeamName);
         
-        if (registerTeamEvent.Members <= 0)
+        if (registerTeamEvent.Members <= 0 || registerTeamEvent.Members > 5)
         {
-            return ValidationProblem("Members");
+            return BadRequest("Antall på laget må være mellom 1 og 5.");
+        }
+
+        if (string.IsNullOrEmpty(registerTeamEvent.ChurchName))
+        {
+            return BadRequest("Velg en menighet fra listen.");
+        }
+
+         if (string.IsNullOrEmpty(registerTeamEvent.TeamName))
+        {
+            return BadRequest("Lagnavn kan ikke være blank.");
         }
 
         var team = await _context.Teams.FirstOrDefaultAsync(x =>
             x.TeamName == registerTeamEvent.TeamName && x.ChurchName == registerTeamEvent.ChurchName);
         
-        if (team == null)
+        if (team != null)
         {
             return BadRequest("Det finnes allerede et lag med dette navnet.");
         }
