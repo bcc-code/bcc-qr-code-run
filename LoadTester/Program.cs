@@ -1,21 +1,13 @@
 ﻿using LoadTester;
 
-Console.WriteLine();
 
-var tasks = new List<Task>();
+var builder = WebApplication.CreateBuilder(args);
 
-for (var i = 0; i < 5; i++)
-{
-    var church = RandomGenerator.Church();
+//builder.Services.AddHostedService<LoadTesterService>();
 
-    for (var j = 0; j < 10; j++)
-    {
-        var team = RandomGenerator.TeamName();
+var app = builder.Build();
 
-        var task = new LoadRunner(church, team).Run();
+app.MapGet("/", () => "Ok");
 
-        tasks.Add(task);
-    }
-}
+app.Start();
 
-await Task.WhenAll(tasks);
