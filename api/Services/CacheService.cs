@@ -103,12 +103,15 @@ namespace api.Services
                     }
                     if (item != null)
                     {
-                        c.AbsoluteExpirationRelativeToNow = ttlLocal;
+                        if(ttlLocal != TimeSpan.Zero)
+                            c.AbsoluteExpirationRelativeToNow = ttlLocal;
+                        else
+                            c.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(1);
                         return item;
                     }
                     else
                     {
-                        c.AbsoluteExpirationRelativeToNow = TimeSpan.Zero;
+                        c.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(1);
                         return default(TItem);
                     }
                 }));
