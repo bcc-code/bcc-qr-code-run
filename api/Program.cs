@@ -28,7 +28,7 @@ builder.Services.AddDbContextPool<DataContext>(options =>
     }
 
     options.UseNpgsql(connectionString);
-});
+}, 50);
 
 builder.Services.AddStackExchangeRedisCache(options =>
 {

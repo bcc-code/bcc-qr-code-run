@@ -431,13 +431,13 @@ module "api_container_app" {
           # },
         ]
         resources     = {
-          cpu         = 0.5
+          cpu         = 2.0
           memory      = "1Gi"
         }
       }]
       scale           = {
         minReplicas   = 0
-        maxReplicas   = 10
+        maxReplicas   = 1
       }
     }
   }
