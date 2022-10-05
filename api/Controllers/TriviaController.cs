@@ -1,8 +1,8 @@
-﻿using api.Data;
+﻿using api.Grains;
 using api.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Orleans;
 
 namespace api.Controllers;
 
@@ -10,11 +10,11 @@ namespace api.Controllers;
 [Route("api")]
 public class TriviaController : ControllerBase
 {
-    private readonly DataContext _context;
+    private readonly IGrainFactory _factory;
 
-    public TriviaController(DataContext context)
+    public TriviaController(IGrainFactory factory)
     {
-        _context = context;
+        _factory = factory;
     }
 
     [Authorize]
@@ -23,16 +23,9 @@ public class TriviaController : ControllerBase
     {
         if (User.Identity?.IsAuthenticated != true)
             return Unauthorized();
-        
-        var team = await _context.Teams.Include(x=>x.QrCodesScanned).FirstOrDefaultAsync(x => x.Id == int.Parse(User.Identity.Name!));
 
-        if (team == null)
-            return Unauthorized();
-
-        var qrCodes = team.QrCodesScanned.Select(x => x.Id).ToList();
-
-        var funfacts = await _context.QrCodes.AsNoTracking().Include(x=>x.FunFact).Where(x => qrCodes.Contains(x.GroupId)).Select(x=>x.FunFact).Distinct().ToArrayAsync();
-        
-        return funfacts;
+        var team = _factory.GetGrain<ITeam>(User.Identity.Name);
+        var funFacts = await team.GetFunFacts();
+        return funFacts.ToArray();
     }
 }

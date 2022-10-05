@@ -2,21 +2,11 @@
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using api.Data;
-using api.Controllers;
-using Microsoft.EntityFrameworkCore;
 
 namespace api.Repositories;
 
 public class Team
 {
-    private readonly DataContext _dataContext;
-
-    public Team(DataContext dataContext)
-    {
-        _dataContext = dataContext;
-    }
-    
     public int Id { get; set; }
     
     public string TeamName { get; init; }
@@ -44,23 +34,23 @@ public class Team
     public TimeSpan? TimeSpent => LastScannedQrCode - FirstScannedQrCode;
 
 
-    public async Task<bool> AddQrCodeAsync(QrCode qrCode)
-    {
-        if (QrCodesScanned.Any(x => x.Id == qrCode.GroupId))
-            return false;
-        
-        _dataContext.Add(new Score(qrCode.GroupId, qrCode.Points, qrCode.IsSecret)
-        {
-            TeamId = Id,
-        });
-        
-        FirstScannedQrCode ??= DateTime.UtcNow;
-        LastScannedQrCode = DateTime.UtcNow;
-
-        await _dataContext.SaveChangesAsync();
-
-        return true;
-    }
+    // public async Task<bool> AddQrCodeAsync(QrCode qrCode)
+    // {
+    //     if (QrCodesScanned.Any(x => x.Id == qrCode.GroupId))
+    //         return false;
+    //     
+    //     _dataContext.Add(new Score(qrCode.GroupId, qrCode.Points, qrCode.IsSecret)
+    //     {
+    //         TeamId = Id,
+    //     });
+    //     
+    //     FirstScannedQrCode ??= DateTime.UtcNow;
+    //     LastScannedQrCode = DateTime.UtcNow;
+    //
+    //     await _dataContext.SaveChangesAsync();
+    //
+    //     return true;
+    // }
 }
 
 public record Score(int Id, int Points, bool IsSecret)

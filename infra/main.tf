@@ -325,6 +325,23 @@ resource "azapi_resource" "static_app" {
   
 }
 
+# File Storage for CMS (directus)
+
+resource "azurerm_storage_account" "file_storage" {
+  name                     = local.storage_account_name
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = local.location
+  account_tier             = "Standard"
+  account_replication_type = "GRS"
+  tags                     = local.tags
+}
+
+resource "azurerm_storage_container" "file_storage_container" {
+  name                  = "files"
+  storage_account_name  = azurerm_storage_account.file_storage.name
+  container_access_type = "blob"
+}
+
 
 # Container Environment
 module "container_apps_env"  {
@@ -380,6 +397,10 @@ module "api_container_app" {
             value   =  local.redis_connection_string_api
           },
           {
+            name    = "azure-storage-key"
+            value   =  azurerm_storage_account.file_storage.primary_access_key
+          },
+          {
             name    = "application-insights-connection-string"
             value   =  module.application_insights.connection_string
           }#,
@@ -428,6 +449,10 @@ module "api_container_app" {
           {
             name        = "POSTGRES_PASSWORD"
             secretRef   = "postgresql-password"
+          },
+          {
+            name        = "STORAGE_AZ_ACCOUNT_KEY"
+            secretRef   = "azure-storage-key"
           },
           {
             name        = "REDIS_CONNECTION_STRING"
@@ -516,22 +541,7 @@ module "api_container_app" {
 # }
 
 
-# File Storage for CMS (directus)
 
-resource "azurerm_storage_account" "file_storage" {
-  name                     = local.storage_account_name
-  resource_group_name      = azurerm_resource_group.rg.name
-  location                 = local.location
-  account_tier             = "Standard"
-  account_replication_type = "GRS"
-  tags                     = local.tags
-}
-
-resource "azurerm_storage_container" "file_storage_container" {
-  name                  = "files"
-  storage_account_name  = azurerm_storage_account.file_storage.name
-  container_access_type = "blob"
-}
 
 
 # Generate password for directus

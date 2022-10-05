@@ -1,15 +1,17 @@
 using api.Data;
-using api.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using System.Globalization;
+using api;
+using Orleans;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.AddOrleans();
 
 
 builder.Services.AddDbContextPool<DataContext>(options =>
@@ -29,6 +31,24 @@ builder.Services.AddDbContextPool<DataContext>(options =>
 
     options.UseNpgsql(connectionString);
 }, 50);
+
+builder.Services.AddDbContextFactory<DataContext>(options =>
+{
+    //var connectionString = "Server=localhost;Port=5432;Database=bcc-code-run;Username=admin;Password=password;";
+    var connectionString = builder.Configuration["AZURE_POSTGRESQL_CONNECTIONSTRING"];
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        var dbPort = builder.Configuration["POSTGRES_PORT"];
+        var dbName = builder.Configuration["POSTGRES_DB"];
+        var dbUser = builder.Configuration["POSTGRES_USER"];
+        var dbHost = builder.Configuration["POSTGRES_HOST"];
+        var dbPassword = builder.Configuration["POSTGRES_PASSWORD"];
+        connectionString =
+            $"Host={dbHost}{(dbPort != "5432" ? ";Port=" + (dbPort ?? "") : "")};Database={dbName};Username={dbUser};Password={dbPassword};Timeout=300;CommandTimeout=300";
+    }
+
+    options.UseNpgsql(connectionString);
+});
 
 builder.Services.AddStackExchangeRedisCache(options =>
 {
@@ -65,9 +85,8 @@ builder.Services.AddCors();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
+builder.Services.AddHealthChecks();
 
-builder.Services.AddSingleton<CacheService>();
-builder.Services.AddScoped<ResultsService>();
 
 var app = builder.Build();
 
@@ -105,10 +124,15 @@ app.UseCors(policy =>
     policy.AllowCredentials();
 });
 
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHealthChecks("health");
+app.UseOrleansDashboard();
+
 
 using (var scope = app.Services.CreateScope())
 {
