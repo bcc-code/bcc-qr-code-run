@@ -32,6 +32,24 @@ builder.Services.AddDbContextPool<DataContext>(options =>
     options.UseNpgsql(connectionString);
 }, 50);
 
+builder.Services.AddDbContextFactory<DataContext>(options =>
+{
+    //var connectionString = "Server=localhost;Port=5432;Database=bcc-code-run;Username=admin;Password=password;";
+    var connectionString = builder.Configuration["AZURE_POSTGRESQL_CONNECTIONSTRING"];
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        var dbPort = builder.Configuration["POSTGRES_PORT"];
+        var dbName = builder.Configuration["POSTGRES_DB"];
+        var dbUser = builder.Configuration["POSTGRES_USER"];
+        var dbHost = builder.Configuration["POSTGRES_HOST"];
+        var dbPassword = builder.Configuration["POSTGRES_PASSWORD"];
+        connectionString =
+            $"Host={dbHost}{(dbPort != "5432" ? ";Port=" + (dbPort ?? "") : "")};Database={dbName};Username={dbUser};Password={dbPassword};Timeout=300;CommandTimeout=300";
+    }
+
+    options.UseNpgsql(connectionString);
+});
+
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetValue<string>("REDIS_CONNECTION_STRING");
@@ -67,6 +85,7 @@ builder.Services.AddCors();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
+builder.Services.AddHealthChecks();
 
 
 var app = builder.Build();
@@ -105,7 +124,6 @@ app.UseCors(policy =>
     policy.AllowCredentials();
 });
 
-builder.Services.AddHealthChecks();
 
 app.UseAuthentication();
 app.UseAuthorization();
