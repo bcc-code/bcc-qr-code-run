@@ -55,10 +55,11 @@ public class ChurchGrain : Grain, IChurch
         var tasks = Teams.Select(x => x.GetTeamResult()).ToArray();
         var results = await Task.WhenAll(tasks);
         
+        var churchParticipants = ChurchData.Participants;
         var activeTeams = results.Where(r => r.Points > 0).ToArray();
         var activeParticipants = activeTeams.Sum(t => t.Members);
         var totalTimeSpent = activeTeams.Any() ? activeTeams.Select(t => t.TimeSpent).Aggregate((c, n) => c.Add(n)) : TimeSpan.Zero;
-        var participation = Math.Min((int)Math.Round((ChurchData.Participants > 0 ? ((decimal)activeParticipants / ChurchData.Participants) : 1) * 100), 100);
+        var participation = churchParticipants <= 0 ? 0 : Math.Min((int)Math.Round((churchParticipants > 0 ? ((decimal)activeParticipants / churchParticipants) : 1) * 100), 100);
         var totalPoints = activeTeams.Sum(t => t.Points);
         var secretsFound = activeTeams.Sum(t => t.SecretsFound);
         var teamsCount = activeTeams.Count();
