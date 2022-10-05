@@ -9,7 +9,7 @@ public interface IChurch : IGrainWithStringKey
 {
     Task RegisterTeam(ITeam teamGrain);
     Task<ChurchResult?> GetResult();
-    Task RemoveTeam(TeamGrain teamGrain);
+    Task RemoveTeam(ITeam teamGrain);
 }
 
 
@@ -80,7 +80,7 @@ public class ChurchGrain : Grain, IChurch
         };
     }
 
-    public Task RemoveTeam(TeamGrain teamGrain)
+    public Task RemoveTeam(ITeam teamGrain)
     {
         Teams.Remove(teamGrain);
         return Task.CompletedTask;
