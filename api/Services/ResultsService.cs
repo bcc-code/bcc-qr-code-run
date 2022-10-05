@@ -67,12 +67,17 @@ namespace api.Services
                 var church = await GetChurchAsync(churchName);
                 if (church != null)
                 {
+                    var churchParticipants = church.Participants;
                     var teams = await _context.Teams.Where(x => x.ChurchName == churchName).ToArrayAsync();
                     var results = teams.Select(t => GetTeamResult(t)).ToArray();
                     var activeTeams = results.Where(r => r.Points > 0);
                     var activeParticipants = activeTeams.Sum(t => t.Members);
                     var totalTimeSpent = activeTeams.Any() ? activeTeams.Select(t => t.TimeSpent).Aggregate((c, n) => c.Add(n)) : TimeSpan.Zero;
-                    var participation = Math.Min((int)Math.Round((church.Participants > 0 ? ((decimal)activeParticipants / church.Participants) : 1) * 100), 100);
+                    var participation = Math.Min((int)Math.Round((church.Participants > 0 ? ((decimal)activeParticipants / churchParticipants) : 1) * 100), 100);
+                    if (church.Participants <= 0)
+                    {
+                        participation = 0;
+                    }
                     var totalPoints = activeTeams.Sum(t => t.Points);
                     var secretsFound = activeTeams.Sum(t => t.SecretsFound);
                     var teamsCount = activeTeams.Count();
