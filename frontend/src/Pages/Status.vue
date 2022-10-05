@@ -22,7 +22,7 @@ myChurch().then(x=> churchResult.value = x)
       <dd>{{store.team.timeSpent}}</dd>
 
       <dt>Skjulte skatter</dt>
-      <dd>{{store.team.secretsFound.length}}</dd>
+      <dd>{{store.team.secretsFound.length}} / 8</dd>
     </dl>
 
     <template v-if="churchResult">
