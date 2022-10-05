@@ -30,6 +30,8 @@ public class Church
     public string CountryCode { get; set;}
 
     public int Participants { get; set; }
+
+    public int TargetParticipants { get; set; }
 }
 
 public class CacheEntry
