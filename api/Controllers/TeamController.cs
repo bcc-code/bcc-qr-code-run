@@ -1,10 +1,10 @@
 ﻿using System.Security.Claims;
-using api.Data;
+using api.Grains;
 using api.Repositories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Orleans;
 
 namespace api.Controllers;
 
@@ -13,59 +13,35 @@ namespace api.Controllers;
 public class TeamEndpoint : ControllerBase
 {
     private readonly ILogger<TeamEndpoint> _logger;
-    private readonly DataContext _context;
+    private readonly IGrainFactory _factory;
 
-    public TeamEndpoint(ILogger<TeamEndpoint> logger, DataContext context)
+    public TeamEndpoint(ILogger<TeamEndpoint> logger, IGrainFactory factory)
     {
         _logger = logger;
-        _context = context;
+        _factory = factory;
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<Team>> RegisterTeam(RegisterTeamRequest registerTeamEvent)
+    public async Task<ActionResult<Team?>> RegisterTeam(RegisterTeamRequest registerTeamEvent)
     {
         _logger.LogInformation("Team {TeamName} logged in", registerTeamEvent.TeamName);
-        
+
         if (registerTeamEvent.Members <= 0 || registerTeamEvent.Members > 5)
-        {
             return BadRequest("Antall deltakere må være mellom 1 og 5.");
-        }
 
-        if (string.IsNullOrEmpty(registerTeamEvent.ChurchName))
-        {
-            return BadRequest("Velg menighet fra listen.");
-        }
+        if (string.IsNullOrEmpty(registerTeamEvent.ChurchName)) return BadRequest("Velg menighet fra listen.");
 
-         if (string.IsNullOrEmpty(registerTeamEvent.TeamName))
-        {
-            return BadRequest("Lagnavn kan ikke være blank.");
-        }
+        if (string.IsNullOrEmpty(registerTeamEvent.TeamName)) return BadRequest("Lagnavn kan ikke være blank.");
 
-            var team = await _context.Teams.FirstOrDefaultAsync(x =>
-            x.TeamName == registerTeamEvent.TeamName && x.ChurchName == registerTeamEvent.ChurchName);
-        
-        if (team != null)
-        {
-            return BadRequest("Det finnes allerede et lag med dette navnet.");
-        }
+        var team = _factory.GetGrain<ITeam>($"{registerTeamEvent.ChurchName}-{registerTeamEvent.TeamName}");
+        if (await team.IsActive())
+            return BadRequest("Det finnes allerede et lag med dette navnet");
 
-
-
-        var team1 = new Team(_context)
-        {
-            Members = registerTeamEvent.Members,
-            TeamName = registerTeamEvent.TeamName,
-            ChurchName = registerTeamEvent.ChurchName,
-        };
-
-        _context.Teams.Add(team1);
-        await _context.SaveChangesAsync();
-        team = team1;
-
+        await team.Register(registerTeamEvent);
 
         var claimsIdentity = new ClaimsIdentity(new[]
         {
-            new Claim(ClaimTypes.Name, team.Id.ToString()),
+            new Claim(ClaimTypes.Name, team.GetPrimaryKeyString()),
         }, "Cookies");
 
         var authProperties = new AuthenticationProperties
@@ -76,34 +52,32 @@ public class TeamEndpoint : ControllerBase
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         await Request.HttpContext.SignInAsync("Cookies", claimsPrincipal, authProperties);
 
-        return team;
+        return await team.GetTeamData();
     }
 
     [HttpGet()]
     [Authorize]
-    public async Task<ActionResult<Team>> Get()
+    public async Task<ActionResult<Team?>> Get()
     {
         if (User.Identity?.IsAuthenticated != true)
             return Unauthorized();
 
-        var team = await _context.Teams.FirstOrDefaultAsync(x => x.Id == int.Parse(User.Identity.Name!));
-        if (team == null)
+        var team = _factory.GetGrain<ITeam>(User.Identity.Name);
+        if (!await team.IsActive())
+        {
             return Unauthorized();
-        
-        return team;
+        }
+
+        return await team.GetTeamData();
     }
 
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
-        _logger.LogInformation("Team {TeamName} logged in", User.FindFirst(ClaimTypes.Name)?.Value);
-        var team = await _context.Teams.FirstOrDefaultAsync(x => x.Id == int.Parse(User.Identity.Name!));
-        if (team != null)
-        {
-            _context.Remove(team);
-            await _context.SaveChangesAsync();
-        }
-        
+        _logger.LogInformation("Team {TeamName} logged out", User.FindFirst(ClaimTypes.Name)?.Value);
+        var team = _factory.GetGrain<ITeam>(User.Identity?.Name);
+        await team.Clear();
+
         await HttpContext.SignOutAsync();
         return NoContent();
     }

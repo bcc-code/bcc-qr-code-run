@@ -1,8 +1,7 @@
-﻿using api.Data;
-using api.Services;
+﻿using api.Grains;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Orleans;
 
 namespace api.Controllers;
 
@@ -10,32 +9,28 @@ namespace api.Controllers;
 [Route("api")]
 public class ResultsController : ControllerBase
 {
-    private readonly ResultsService _results;
+    private readonly IGrainFactory _factory;
 
-    public ResultsController(ResultsService results)
+    public ResultsController(IGrainFactory factory)
     {
-        _results = results;
+        _factory = factory;
     }
 
     [HttpGet("results")]
-    public Task<List<ChurchResult?>> GetResults()
+    public async Task<ChurchResult[]> GetResults()
     {
-        return _results.GetResultsAsync();
+        var resultGrain =  _factory.GetGrain<IResultsGrain>("results");
+        return await resultGrain.GetResults();
     }
     
     [HttpGet("results/mychurch")]
     [Authorize]
-    public async Task<ActionResult<ChurchResult>> GetMyChurchResults()
+    public async Task<ActionResult<ChurchResult?>> GetMyChurchResults()
     {
         if (User.Identity?.IsAuthenticated != true)
             return Unauthorized();
 
-        var teamId = int.Parse(User.Identity.Name!);
-        return Ok(await _results.GetResultForChurchAsync(teamId));
-        
+        var team = _factory.GetGrain<IChurch>(User.Identity.Name?.Split("-")[0] ?? "nullGrain");
+        return await team.GetResult();
     }
 }
-
-//public record ChurchResult(string ChurchName, int Teams, int Score, int SecretsFound, string TimeSpent);
-
-//public record Result(string Church, int Points);

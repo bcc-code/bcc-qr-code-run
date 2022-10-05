@@ -1,15 +1,17 @@
 using api.Data;
-using api.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using System.Globalization;
+using api;
+using Orleans;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.AddOrleans();
 
 
 builder.Services.AddDbContextPool<DataContext>(options =>
@@ -66,8 +68,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
 
-builder.Services.AddSingleton<CacheService>();
-builder.Services.AddScoped<ResultsService>();
 
 var app = builder.Build();
 
@@ -105,10 +105,16 @@ app.UseCors(policy =>
     policy.AllowCredentials();
 });
 
+builder.Services.AddHealthChecks();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHealthChecks("health");
+app.UseOrleansDashboard();
+
 
 using (var scope = app.Services.CreateScope())
 {

@@ -1,10 +1,8 @@
-﻿using api.Data;
+﻿using api.Grains;
 using api.Repositories;
-using api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
+using Orleans;
 
 namespace api.Controllers;
 
@@ -14,16 +12,12 @@ namespace api.Controllers;
 public class QrCodeController : ControllerBase
 {
     private readonly ILogger<QrCodeController> _logger;
-    private readonly DataContext _context;
-    private readonly CacheService _cache;
-    private readonly ResultsService _results;
+    private readonly IGrainFactory _factory;
 
-    public QrCodeController(ILogger<QrCodeController> logger, DataContext dataContext, CacheService cache, ResultsService results)
+    public QrCodeController(ILogger<QrCodeController> logger, IGrainFactory factory)
     {
         _logger = logger;
-        _context = dataContext;
-        _cache = cache;
-        _results = results;
+        _factory = factory;
     }
 
     /// <summary>
@@ -46,31 +40,16 @@ public class QrCodeController : ControllerBase
         if (qrCodeData == null)
             return BadRequest("Ukjent QR-kode!");
 
-        var qrCode = await _cache.GetOrCreateAsync(qrCodeData.QrCodeId.ToString(), TimeSpan.FromMinutes(10),
-            () => { return _context.QrCodes.FirstOrDefaultAsync(x => x.QrCodeId == qrCodeData.QrCodeId); });
-        if (qrCode == null)
-            return BadRequest("Ukjent QR-kode!");
-
-        _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
-
-        var team = await _context.Teams.FirstOrDefaultAsync(x => x.Id == int.Parse(User.Identity.Name!));
-
-        if (team == null)
+        var team = _factory.GetGrain<ITeam>(User.Identity.Name);
+        if (!await team.IsActive())
             return Unauthorized();
 
-        if (!await team.AddQrCodeAsync(qrCode))
+        var result = await team.RegisterPost(qrCodeData);
+        if (result == null)
             return BadRequest("Du har allerede scannet denne QR-koden!");
 
-        await _results.UpdateResultsFor(team.TeamName, team.ChurchName);
-
-        return new QrCodeResult()
-        {
-            Points = qrCode.Points,
-            Team = team,
-            FunFact = qrCode.FunFact,
-        };
+        return result;
     }
-
 }
 
 public class QrCodeResult

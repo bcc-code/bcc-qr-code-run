@@ -1,6 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using api.Controllers;
-using Microsoft.EntityFrameworkCore;
 
 namespace api.Repositories;
 

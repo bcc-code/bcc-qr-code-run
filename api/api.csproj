@@ -27,5 +27,28 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.7" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Orleans.Analyzers" Version="3.6.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Orleans.Clustering.AzureStorage" Version="3.6.2" />
+    <PackageReference Include="Microsoft.Orleans.Persistence.AzureStorage" Version="3.6.2" />
+    <PackageReference Include="Microsoft.Orleans.OrleansTelemetryConsumers.AI" Version="3.6.2" />
+    <PackageReference Include="Microsoft.Orleans.Server" Version="3.6.2" />
+    <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="3.6.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="OrleansDashboard" Version="3.6.2" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Orleans_CodeGenInputs Remove="Services\CacheService.cs" />
+    <Orleans_CodeGenInputs Remove="Services\ResultsService.cs" />
+    <Orleans_CodeGenInputs Remove="Services\ChurchResult.cs" />
+    <Orleans_CodeGenInputs Remove="Services\TeamResult.cs" />
+  </ItemGroup>
 
 </Project>
