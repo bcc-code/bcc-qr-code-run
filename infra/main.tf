@@ -22,18 +22,12 @@ terraform {
   }
   experiments = [module_variable_optional_attrs]
 
-#terraform cloud backend
-  backend "remote"{
-    organization = "BCC-ITS"
-    workspaces {name = "bcc-qr-code-run"}
+  backend "azurerm" {
+    resource_group_name  = "BCC-Platform"
+    storage_account_name = "bccplatformtfstate"
+    container_name       = "tfstate"
+    key                  = "qr-code-run.terraform.tfstate"
   }
-
-  # backend "azurerm" {
-  #   resource_group_name  = "BCC-Platform"
-  #   storage_account_name = "bccplatformtfstate"
-  #   container_name       = "tfstate"
-  #   key                  = "qr-code-run.terraform.tfstate"
-  # }
 
 }
 
@@ -50,10 +44,10 @@ provider "azuread" {
 
 provider "postgresql" {
   superuser = false
-  host      = azurerm_postgresql_flexible_server.postgresql.fqdn
+  host      = data.azurerm_postgresql_flexible_server.postgresql_server.fqdn
   database  =  local.resource_prefix
   username  = "psqladmin"
-  password  = azurerm_key_vault_secret.postgreql_admin_password.value
+  password  = data.azurerm_key_vault_secret.postgresql_admin_password.value
   sslmode   = "require"
 }
 
@@ -62,7 +56,7 @@ data "azurerm_client_config" "current" {}
 locals {
     location        = "norwayeast"
     resource_group  = "qr-code-run-${var.environment}"
-    resource_prefix = "${var.resource-prefix}"
+    resource_prefix = "qr-code-run-prod"
     platform_resource_prefix = "qr-code-run-${var.environment}"
     platform_resource_group  = "qr-code-run-${var.environment}"
     storage_account_name     = "${replace(local.platform_resource_prefix,"-","")}"
@@ -161,6 +155,28 @@ data "azurerm_container_registry" "acr" {
   resource_group_name = "BCC-Platform"
 }
 
+# Get Key Vault for postgresql server
+data "azurerm_key_vault" "keyvault" {
+  name                = lower(replace("${local.platform_resource_prefix}-psql","-",""))
+  resource_group_name = local.platform_resource_group
+}
+
+# Get Admin password for postgresql server
+data "azurerm_key_vault_secret" "postgresql_admin_password" {
+  name         = "postgreql-admin-password"
+  key_vault_id = data.azurerm_key_vault.keyvault.id
+}
+
+# Get Postgresql Server
+data "azurerm_postgresql_flexible_server" "postgresql_server" {
+  name                   = "${local.platform_resource_prefix}-postgresql"
+  resource_group_name    = local.platform_resource_group
+}
+
+# Get platform resource group
+data "azurerm_resource_group" "platform_rg" {
+  name = local.platform_resource_group
+}
 
 # Create Database
 # NB! This will only work if server has a public IP and the client execuring terrafrom has been whitelisted in the server's firewall
@@ -168,7 +184,7 @@ data "azurerm_container_registry" "acr" {
 module "postgresql_db" {
   source             = "./modules/azure/postgresql_db"
   db_name            = local.resource_prefix
-  server_resource_id = azurerm_postgresql_flexible_server.postgresql.id
+  server_resource_id = data.azurerm_postgresql_flexible_server.postgresql_server.id
   depends_on = [
     azurerm_postgresql_flexible_server_firewall_rule.terraform_deploy_ip
   ]
@@ -178,7 +194,7 @@ module "postgresql_db" {
 resource "azurerm_key_vault_secret" "postgreql_user_password" {
   name         = "${local.resource_prefix}-db-user-password"
   value        = module.postgresql_db.db_user_password
-  key_vault_id = azurerm_key_vault.postgresql_vault.id
+  key_vault_id = data.azurerm_key_vault.keyvault.id
 }
 
 
@@ -387,7 +403,7 @@ module "api_container_app" {
           },
           {
             name        = "POSTGRES_HOST"
-            value       = azurerm_postgresql_flexible_server.postgresql.fqdn
+            value       = data.azurerm_postgresql_flexible_server.postgresql_server.fqdn
           },
           {
             name        = "APPLICATIONINSIGHTS_CONNECTION_STRING"
@@ -431,13 +447,13 @@ module "api_container_app" {
           # },
         ]
         resources     = {
-          cpu         = 2.0
+          cpu         = 0.5
           memory      = "1Gi"
         }
       }]
       scale           = {
         minReplicas   = 0
-        maxReplicas   = 1
+        maxReplicas   = 10
       }
     }
   }
@@ -631,7 +647,7 @@ module "directus_container_app" {
         },
         {
           name        = "DB_HOST"
-          value       = azurerm_postgresql_flexible_server.postgresql.fqdn
+          value       = data.azurerm_postgresql_flexible_server.postgresql_server.fqdn
         },
         {
           name        = "DB_PORT"
@@ -688,7 +704,7 @@ module "gateway" {
   name                  = "${local.resource_prefix}-gateway"
   location              = local.location
   tags                   = local.tags
-  endpoint_domain_name  = var.endpoint_domain_name
+  endpoint_domain_name  = "jordenrundt.bcc.no"
   endpoint_name         = "default"
   resource_group_id     = azurerm_resource_group.rg.id
   
@@ -703,12 +719,10 @@ module "api_route" {
   route_path            = "/api/*"
   origin_path           = "/api/" 
   endpoint_name         = "default"
-  endpoint_domain_name  = var.endpoint_domain_name
+  endpoint_domain_name  = "jordenrundt.bcc.no"
   resource_group_id     = azurerm_resource_group.rg.id
-  resource_group_name   = azurerm_resource_group.rg.name
   depends_on = [
-    module.gateway,
-    azurerm_resource_group.rg
+    module.gateway
   ]
 }
 
@@ -719,11 +733,9 @@ module "frontend_route" {
   origin_host           = jsondecode(azapi_resource.static_app.output).properties.defaultHostname
   route_path            = "/*"
   endpoint_name         = "default"
-  endpoint_domain_name  = var.endpoint_domain_name
+  endpoint_domain_name  = "jordenrundt.bcc.no"
   resource_group_id     = azurerm_resource_group.rg.id
-  resource_group_name   = azurerm_resource_group.rg.name
   depends_on = [
-    module.gateway,
-    azurerm_resource_group.rg
+    module.gateway
   ]
 }
