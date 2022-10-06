@@ -30,7 +30,7 @@ public class ResultsController : ControllerBase
         if (User.Identity?.IsAuthenticated != true)
             return Unauthorized();
 
-        var team = _factory.GetGrain<IChurch>(User.Identity.Name?.Split("-")[0] ?? "nullGrain");
-        return await team.GetResult();
+        var church = _factory.GetGrain<IChurch>(User.Identity.Name?.Split("-")[0] ?? "nullGrain");
+        return await church.GetResult();
     }
 }
