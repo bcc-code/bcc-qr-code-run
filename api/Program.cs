@@ -30,9 +30,9 @@ builder.Services.AddDbContextPool<DataContext>(options =>
     }
 
     options.UseNpgsql(connectionString);
-}, 50);
+}, 10);
 
-builder.Services.AddDbContextFactory<DataContext>(options =>
+builder.Services.AddPooledDbContextFactory<DataContext>(options =>
 {
     //var connectionString = "Server=localhost;Port=5432;Database=bcc-code-run;Username=admin;Password=password;";
     var connectionString = builder.Configuration["AZURE_POSTGRESQL_CONNECTIONSTRING"];
@@ -48,7 +48,7 @@ builder.Services.AddDbContextFactory<DataContext>(options =>
     }
 
     options.UseNpgsql(connectionString);
-});
+}, 40);
 
 builder.Services.AddStackExchangeRedisCache(options =>
 {

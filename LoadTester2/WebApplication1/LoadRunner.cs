@@ -47,21 +47,21 @@ public class LoadRunner
                 Data = GetQrCode(i)
             });
 
-            for (var j = 0; j < 2; j++)
+            for (var j = 0; j < 10; j++)
             {
-                await Task.Delay(Random.Shared.Next(5000));
+                await Task.Delay(Random.Shared.Next(1000));
 
                 await client.GetAsync("team");
-                await Task.Delay(Random.Shared.Next(5000));
+                await Task.Delay(Random.Shared.Next(1000));
 
                 await client.GetAsync("results/mychurch");
-                await Task.Delay(Random.Shared.Next(5000));
+                await Task.Delay(Random.Shared.Next(1000));
 
                 await client.GetAsync("results");
-                await Task.Delay(Random.Shared.Next(5000));
+                await Task.Delay(Random.Shared.Next(1000));
 
                 await client.GetAsync("trivia");
-                await Task.Delay(Random.Shared.Next(5000));
+                await Task.Delay(Random.Shared.Next(1000));
             }
         }
 
