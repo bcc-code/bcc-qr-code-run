@@ -1,5 +1,8 @@
 ﻿using System.Net.Sockets;
 using System.Reflection;
+using api.Data;
+using api.Grains;
+using Microsoft.EntityFrameworkCore;
 using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
@@ -14,6 +17,8 @@ public static class OrleansExtensions
         {
             c.UseDashboard();
             c.AddApplicationInsightsTelemetryConsumer();
+
+            c.AddStartupTask(StartupTask);
 
             if (builder.Environment.IsDevelopment())
             {
@@ -37,5 +42,18 @@ public static class OrleansExtensions
 
             c.ConfigureApplicationParts(manager => manager.AddApplicationPart(Assembly.GetExecutingAssembly()).WithReferences());
         });
+    }
+
+    private static async Task StartupTask(IServiceProvider services, CancellationToken cancellationToken)
+    {
+        var dataContext = services.GetService<DataContext>()!;
+        var grainFactory = services.GetService<IGrainFactory>()!;
+
+        var teams = await dataContext.Teams.ToListAsync(cancellationToken: cancellationToken);
+        foreach (var team in teams)
+        {
+            var teamGrain = grainFactory.GetGrain<ITeam>(team.ChurchName + "-" + team.TeamName);
+            await teamGrain.IsActive(); // smooth startup to load everything sequentially, to avoid overloading the database
+        }
     }
 }
