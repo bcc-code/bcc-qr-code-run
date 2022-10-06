@@ -30,22 +30,27 @@ public class TeamGrain : Grain, ITeam
     
     public IChurch Church { get; set; }
     
+    
+    public Team? TeamData { get; set; }
+    public List<FunFact> FunFacts { get; set; } = new();
+    
     /// <inheritdoc />
     public override async Task OnActivateAsync()
     {
-
         var context = await _dbContextFactory.CreateDbContextAsync();
 
-        var team = await context.Teams.FirstOrDefaultAsync(x => x.ChurchName + "-" + x.TeamName == this.GetPrimaryKeyString());
+        var team = await context.Teams.AsNoTracking().FirstOrDefaultAsync(x => x.ChurchName + "-" + x.TeamName == this.GetPrimaryKeyString());
         if (team == null) return;
         TeamData = team;
+
+        var qrCodesScanned = team.QrCodesScanned.Select(x => x.Id);
+        FunFacts = await context.QrCodes.AsNoTracking().Include(x=>x.FunFact).Where(x => qrCodesScanned.Contains(x.GroupId)).Select(x=>x.FunFact).Distinct().ToListAsync();
 
         Church = GrainFactory.GetGrain<IChurch>(team.ChurchName);
 
         _ = Church.RegisterTeam(this);
     }
 
-    public Team? TeamData { get; set; }
 
     /// <inheritdoc />
     public async Task Register(RegisterTeamRequest request)
@@ -71,14 +76,9 @@ public class TeamGrain : Grain, ITeam
         _ = Church.RegisterTeam(this);
     }
 
-    
-
     /// <inheritdoc />
     public async Task<QrCodeResult?> RegisterPost(QrCodeData qrCodeData)
     {
-        if (ScannedQrCodes.Any(x => x.QrCodeId == qrCodeData.QrCodeId))
-            return null; // early return to avoid creating dbcontext
-        
         await using var context = await _dbContextFactory.CreateDbContextAsync();
         var qrCode = await context.QrCodes.FirstOrDefaultAsync(x => x.QrCodeId == qrCodeData.QrCodeId);
         if (qrCode == null)
@@ -95,7 +95,7 @@ public class TeamGrain : Grain, ITeam
 
         await context.SaveChangesAsync();
 
-        ScannedQrCodes.Add(qrCode);
+        FunFacts.Add(qrCode.FunFact);
 
         return new QrCodeResult()
         {
@@ -104,9 +104,7 @@ public class TeamGrain : Grain, ITeam
             FunFact = qrCode.FunFact
         };
     }
-
-    public List<QrCode> ScannedQrCodes { get; } = new();
-
+    
     public Task<bool> IsActive() => Task.FromResult(TeamData != null);
 
     public Task<Team?> GetTeamData() => Task.FromResult(TeamData);
@@ -123,7 +121,7 @@ public class TeamGrain : Grain, ITeam
         DeactivateOnIdle();
     }
 
-    public Task<IEnumerable<FunFact>> GetFunFacts() => Task.FromResult<IEnumerable<FunFact>>(ScannedQrCodes.Select(x => x.FunFact).ToList());
+    public Task<IEnumerable<FunFact>> GetFunFacts() => Task.FromResult<IEnumerable<FunFact>>(FunFacts.DistinctBy(x=>x.FunFactId).ToList());
 
     /// <inheritdoc />
     public Task<TeamResult> GetTeamResult()
