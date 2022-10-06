@@ -121,7 +121,7 @@ public class TeamGrain : Grain, ITeam
         DeactivateOnIdle();
     }
 
-    public Task<IEnumerable<FunFact>> GetFunFacts() => Task.FromResult<IEnumerable<FunFact>>(FunFacts.DistinctBy(x=>x.FunFactId).ToList());
+    public Task<IEnumerable<FunFact>> GetFunFacts() => Task.FromResult<IEnumerable<FunFact>>(FunFacts.DistinctBy(x=>x.FunFactId).OrderBy(x=>x.FunFactId).ToList());
 
     /// <inheritdoc />
     public Task<TeamResult> GetTeamResult()
