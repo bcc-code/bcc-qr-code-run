@@ -57,6 +57,7 @@ public class TeamGrain : Grain, ITeam
         {
             TeamName = request.TeamName,
             ChurchName = request.ChurchName,
+            Members = request.Members,
         };
 
         await using (var context = await _dbContextFactory.CreateDbContextAsync())

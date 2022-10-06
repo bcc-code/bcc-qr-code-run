@@ -11,7 +11,7 @@
         {
             var tasks = new List<Task>();
 
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 5; i++)
             {
                 var church = RandomGenerator.Church();
 
