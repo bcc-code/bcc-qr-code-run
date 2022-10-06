@@ -57,8 +57,19 @@ async function onDecode(decodedString: string) {
       <div class="text-4xl text-brown font-bold">Gratulerer!</div>
       <div class="text-brown text-2xl mt-5">{{scannedQrCode.points}} poeng</div>
       
-      <div class="mt-10 text-2xl text-brown">{{scannedQrCode.funFact.title}}</div>
-      <div class="mt-3 text-xl text-brown" v-html="scannedQrCode.funFact.content"></div>
+      <div class="border-t border-b border-interactive py-1 mb-1 mt-5 font-bold text-xl text-accept2">{{scannedQrCode.funFact.title}}</div>
+      <div class="mt-3 text-l text-brown content-block" v-html="scannedQrCode.funFact.content"></div>
     </div>
   </div>
 </template>
+
+<style>
+  .content-block ul  {
+    list-style: disc;
+    margin-left: 1em;
+  }
+  .content-block ul li  {
+    margin-bottom: 0.3em;
+    margin-top: 0.3em;
+  }
+</style>
