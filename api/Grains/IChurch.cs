@@ -91,7 +91,7 @@ public class ChurchGrain : Grain, IChurch
         try
         {
             var region = new RegionInfo(countryCode);
-            return region.Name;
+            return region.EnglishName;
         }
         catch
         {
