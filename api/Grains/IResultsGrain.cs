@@ -1,5 +1,6 @@
 using api.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Orleans;
 
 namespace api.Grains;
@@ -7,7 +8,6 @@ namespace api.Grains;
 public interface IResultsGrain : IGrainWithStringKey
 {
     Task<ChurchResult[]> GetResults();
-    Task RegisterTeam(ITeam team);
 }
 
 public class ResultsGrain : Grain, IResultsGrain
@@ -29,15 +29,20 @@ public class ResultsGrain : Grain, IResultsGrain
 
     public List<IChurch> Churches { get; set; }
 
+    public ChurchResult[]? CachedResults = null;
+    
+    private DateTime _cacheExpireTime = DateTime.Now;
+
     public async Task<ChurchResult[]> GetResults()
     {
+        if (_cacheExpireTime > DateTime.Now && CachedResults != null)
+        {
+            return CachedResults;
+        }
+        
         var tasks = Churches.Select(x=>x.GetResult()).ToArray();
         var results = await Task.WhenAll(tasks);
-        return results.Where(x=>x is not null).OrderByDescending(x=>x!.Score).ToArray()!;
-    }
-
-    public Task RegisterTeam(ITeam team)
-    {
-        throw new NotImplementedException();
+        _cacheExpireTime = DateTime.Now.AddSeconds(20);
+        return CachedResults = results.Where(x=>x is not null).OrderByDescending(x=>x!.Score).ToArray()!;
     }
 }
