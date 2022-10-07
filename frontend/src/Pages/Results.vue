@@ -13,10 +13,10 @@ getResults().then(x => results.value = x)
     <table class="table-auto w-full text-brown">
       <thead>
         <tr class="border-t border-b border-interactive text-l text-accent text-left">
-          <th class="py-2">Menighet</th>
-          <th class="text-center">Poeng</th>
-          <th class="text-center">Oppslutning</th>
-          <th class="text-center">Score</th>
+          <th class="py-2">Menighet<br><p class="text-xs">&nbsp;</p></th>
+          <th class="text-center">Poeng<br><p class="text-xs">gj. snitt</p></th>
+          <th class="text-center px-2">Oppslutning<br><p class="text-xs">ant. deltakere</p></th>
+          <th class="text-center">Score<br><p class="text-xs">&nbsp;</p></th>
         </tr>
       </thead>
       <tbody>

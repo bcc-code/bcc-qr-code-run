@@ -43,6 +43,6 @@ public class ResultsGrain : Grain, IResultsGrain
         var tasks = Churches.Select(x=>x.GetResult()).ToArray();
         var results = await Task.WhenAll(tasks);
         _cacheExpireTime = DateTime.Now.AddSeconds(20);
-        return CachedResults = results.Where(x=>x is not null).OrderByDescending(x=>x!.Score).ToArray()!;
+        return CachedResults = results.Where(x=>x is not null).Where(x => x!.AveragePoints > 0).OrderByDescending(x=>x!.Score).ToArray()!;
     }
 }

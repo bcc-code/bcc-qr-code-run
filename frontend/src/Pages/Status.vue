@@ -29,21 +29,22 @@ myChurch().then(x=> churchResult.value = x)
       <h3 class="border-t border-b border-interactive py-1 mb-1 mt-5 font-bold text-xl text-accept2">{{ churchResult.church }}</h3>
   
       <dl class="text-l text-accept2 grid grid-cols-[1fr_auto] gap-3">
-        <dt>Lag</dt>
+        <dt>Antall lag</dt>
         <dd>{{churchResult.teams }}</dd>
   
         <dt>Gjennomsnitt poeng</dt>
         <dd>{{churchResult.averagePoints}}</dd>
   
-        <dt>Total Tid</dt>
+        <dt>Total tid</dt>
         <dd>{{churchResult.timeSpent}}</dd>
   
         <dt>Skjulte skatter</dt>
         <dd>{{churchResult.secretsFound}}</dd>
 
-        <dt>Oppslutning</dt>
+        <dt>Oppslutning<br><p class="text-xs">Deltakere ift. antall påmeldt til stevnet</p></dt>
         <dd>{{churchResult.participants}} ({{churchResult.participation}}%)</dd>
       </dl>
+      
     </template>
   </div>
 </template>

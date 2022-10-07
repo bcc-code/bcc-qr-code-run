@@ -64,7 +64,7 @@ function setTab (tab: number) {
           <Trivia v-if="selectedTab===4"/>
       </div>
   
-      <div class="flex-1 flex items-end px-4 pb-5">
+      <div class="flex-1 flex items-end px-4 pb-20">
         <button class="block w-full rounded-md bg-interactive py-3 px-5 text-center text-xl font-medium text-brown shadow-md active:bg-interactive_active active:text-white"
         @click="showQrScan=true">Skann QR-kode</button>
       </div>
