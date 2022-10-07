@@ -29,7 +29,7 @@ const showResults = ref(false);
         <p> Blir det <i>din</i> menighet som har <b>best oppslutning</b>?</p>
         <a class="block w-full rounded-md bg-interactive text-xl py-3 px-5 text-center text-base font-medium text-brown shadow-md active:bg-interactive_active active:text-white" @click="showRegister = true">Kom i gang!</a>
         <div v-if="showResults">
-          <h2 class="text-2xl font-bold text-accent tracking-tight">Resultater</h2>
+          <h3 class="border-t border-b border-interactive py-1 mb-1 mt-5 font-bold text-xl text-accept2">Resultater</h3>
           <Results/>
         </div>
       </div>
