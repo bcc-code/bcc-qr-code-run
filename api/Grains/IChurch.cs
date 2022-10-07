@@ -1,5 +1,6 @@
 using System.Globalization;
 using api.Data;
+using api.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Orleans;
 
@@ -43,6 +44,9 @@ public class ChurchGrain : Grain, IChurch
 
     public Task RegisterTeam(ITeam teamGrain)
     {
+        if (Teams.Any(x => x.GetPrimaryKeyString() == teamGrain.GetPrimaryKeyString()))
+            return Task.CompletedTask;
+        
         Teams.Add(teamGrain);
         return Task.CompletedTask;
     }
