@@ -25,8 +25,8 @@ const showResults = ref(true);
       
       <div class="mx-auto space-y-6 pb-6 px-4">
         <h2 class="text-3xl font-bold tracking-tight text-accept2 text-center" id="join-heading"><span class="text-accent text-base">QR-LØP</span><br> JORDEN RUNDT</h2>
-        <p class="text-l text-brown text-center">Ta med noen av vennene dine mellom<br> 12:30 og 17:30 og reis <i>jorden rundt</i>! </p><p class="text-center">Reisen tar ca. 1.5 timer - start når du vil!</p>
-        <blockquote class="border-t text-accent border-interactive py-1 mb-1 mt-10 p-4 my-4 bg-gray-50 border-l-4 border-gray-300 dark:border-gray-500 dark:bg-gray-800">Tips: Menigheten din scorer basert på poeng samlet på postene OG hvor høy oppslutning det er fra din menighet.</blockquote>
+        <p class="text-l text-brown text-center">Ta med noen av vennene dine mellom<br> 12:30 og 17:30 og reis <i>jorden rundt</i>! </p><p class="text-center">Reisen tar ca. 1,5 time - start når du vil!</p>
+        <blockquote class="border-t text-accent border-interactive py-1 mb-1 mt-10 p-4 my-4 bg-gray-50 border-l-4 border-gray-300 dark:border-gray-500 dark:bg-gray-800"><b>Tips:</b> Menigheten din scorer basert på poeng samlet på postene OG hvor høy oppslutning det er fra din menighet.</blockquote>
         <a class="block w-full rounded-md bg-interactive text-xl py-3 px-5 text-center text-base font-medium text-brown shadow-md active:bg-interactive_active active:text-white" @click="showRegister = true">KOM I GANG</a>
         <div v-if="showResults">
           <h3 class="border-t text-center border-interactive py-1 mb-1 mt-20 font-bold text-xl text-accept2">Resultater</h3>
