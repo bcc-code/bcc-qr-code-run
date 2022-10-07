@@ -25,8 +25,8 @@ async function join() {
 
 <template>
   <div class="flex flex-col  min-h-screen">
-    <div class="text-4xl font-bold text-accept2  py-5 px-4 drop-shadow">
-      <h1 class="color-accent text-center">Jorden Rundt</h1>
+    <div class="text-3xl font-bold text-accept2  py-5 px-4 drop-shadow">
+      <h1 class="color-accent text-center">JORDEN RUNDT</h1>
     </div>
     
     <div class="mx-auto px-4 py-5 space-y-4">

@@ -29,8 +29,8 @@ function setTab (tab: number) {
     
     
 
-    <div class="text-4xl font-bold text-accept2 text-center py-5 px-4 drop-shadow">
-      <h1 class="text-accept2">Jorden Rundt </h1>
+    <div class="text-3xl font-bold text-accept2 text-center py-5 px-4 drop-shadow">
+      <h1 class="text-accept2">JORDEN RUNDT </h1>
     </div>
     <div class="absolute h-7 w-7 text-right right-7 top-7 text-accept2" @click="logout">
       <ArrowLeftOnRectangleIcon />
